@@ -1,16 +1,16 @@
 program WeldFormSPH
 use Integrate
-
-! Type Particle
-  ! Integer, Dimension(:), Allocatable :: ID
-  ! Real, Dimension(:), Allocatable :: X
-  ! Real, Dimension(:), Allocatable :: Y
-  ! Real, Dimension(:), Allocatable :: Z
-! End Type
-! Type(Particle):: SPHelement
-
+use ParticleData
+use Geometry 
 
 implicit none
+
+Type(Particle):: pt
+!Type(Particle), POINTER :: pt
+
+ allocate (pt%x(100))
+ !pt => x(10) = 0.
+ pt%x(1) = 0. 
 
 end program WeldFormSPH
 
