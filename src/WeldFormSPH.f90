@@ -10,6 +10,7 @@ implicit none
 
   real, dimension(1:3) :: V
   real :: dx, r, Rxy, Lz, h 
+  integer:: i
   
   dx    = 0.005
   Rxy  = 0.15
@@ -21,6 +22,9 @@ implicit none
  !AddBoxLength(tag, V, Lx, Ly, Lz, r, Density,  h)			
  call AddBoxLength(0, V, 1.0,1.0,1.0,r, 2700.0, h)
  
+ do i = 1, part_count
+ write (*,*) "Particle", i ," position is ", pt%x(i,1), pt%x(i,1), pt%x(i,3)
+ end do 
  !call AddCylinderLength(0, V, Rxy, Lz, r)
 
 end program WeldFormSPH

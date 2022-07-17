@@ -1,12 +1,11 @@
 module Domain
 use ParticleData
-use Neighbor 
+!use Neighbor 
 
 implicit none 
 
 integer :: Dim, part_count
 type(Particle)::pt
-integer, dimension(3):: cellsize
 
 contains 
 
@@ -33,7 +32,10 @@ contains
       Xp(3) = Xp(3) + 2 * r
     end do
     allocate (pt%x(part_count,3))
-    
+
+    do i=1, Dim
+      Xp(i) = V(i) + r
+    end do     
     write(*,*) "Box Particle Count is ", part_count
     p = 1
     do while (Xp(3) <= (V(3)+Lz-r))
