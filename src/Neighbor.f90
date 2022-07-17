@@ -18,8 +18,8 @@ subroutine CellInitiate ()
   integer:: i,p
   do p=1, part_count
     do i=1,Dim
-      if(pt%x(i)>trpr(i)) 
-        trpr(i) = pt%x(i)
+      if ( pt%x(p,i) > trpr(i) ) then 
+        trpr(i) = pt%x(p,i)
       end if
     end do
   end do

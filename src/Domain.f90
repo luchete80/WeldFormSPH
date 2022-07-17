@@ -16,11 +16,12 @@ contains
     real, intent(in):: r, Lx, Ly, Lz, Density, h  
     real, dimension (1:3) :: Xp
     integer :: i, p
+    Dim = 3
     do i=1, Dim
       Xp(i) = V(i) + r
     end do 
     
-    part_count = 0
+    part_count = 1
     do while (Xp(3) <= (V(3)+Lz-r))
       do while (Xp(2) <= (V(2)+Ly-r))
         do while (Xp(1) <= (V(1)+Lx-r))
@@ -31,20 +32,22 @@ contains
       end do
       Xp(3) = Xp(3) + 2 * r
     end do
-    allocate (pt%x(part_count,3))
+    allocate (pt%x(part_count+10,3))
 
     do i=1, Dim
       Xp(i) = V(i) + r
-    end do     
-    write(*,*) "Box Particle Count is ", part_count
+    end do    
+    write (*,*) "xp ", V(1)    
+    !write(*,*) "Box Particle Count is ", part_count
     p = 1
     do while (Xp(3) <= (V(3)+Lz-r))
       do while (Xp(2) <= (V(2)+Ly-r))
         do while (Xp(1) <= (V(1)+Lx-r))
           do i=1, Dim
             pt%x(p,i) = Xp(i)
-            p = p + 1
+            !write (*,*) "particle " ,p, " xp ", Xp(i)
           end do 
+          p = p + 1
           Xp(1) = Xp(1) + 2 * r
         end do
         Xp(2) = Xp(2) + 2 * r
