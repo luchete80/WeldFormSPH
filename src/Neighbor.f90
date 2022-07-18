@@ -173,6 +173,15 @@ subroutine YZPlaneCellsNeighbourSearch(q1)
   end do
 end subroutine YZPlaneCellsNeighbourSearch
 
+logical function CheckRadius()
+end function CheckRadius
+
+subroutine AllocateNbPair(temp1, temp2, t)
+  integer ,intent(in):: temp1,temp2, t
+  integer:: i,j
+  
+end subroutine AllocateNbPair
+
 subroutine MainNeighbourSearch()
 use omp_lib 
 PRINT *, "Hello from process: ", OMP_GET_THREAD_NUM()
