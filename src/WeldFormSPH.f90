@@ -20,7 +20,7 @@ implicit none
   maxt = omp_get_max_threads()
   write( *, * ) 'Max threads ', maxt
   
-  dx    = 0.005
+  dx    = 0.1
   Rxy  = 0.15
   Lz = 0.56
   r = dx / 2.0
@@ -59,6 +59,11 @@ implicit none
 
   ! !$omp end parallel
   
+  call InitNb()
+  call CellInitiate()
+  call ListGenerate()
+
+!open (12,file='temp.log', status='old', position='APPEND')  
   
 end program WeldFormSPH
 

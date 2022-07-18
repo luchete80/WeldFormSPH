@@ -6,6 +6,7 @@ implicit none
 
 integer :: Dim, part_count
 type(Particle)::pt
+real, dimension(3):: dommax
 
 contains 
   subroutine Init()
@@ -21,13 +22,13 @@ contains
     real, dimension (1:3) :: Xp
     integer :: i, p
     Dim = 3
-    do i=1, Dim
-      Xp(i) = V(i) + r
-    end do 
-    
+
+    Xp(3) = V(3) + r
     part_count = 1
     do while (Xp(3) <= (V(3)+Lz-r))
+      Xp(2) = V(2) + 2 * r
       do while (Xp(2) <= (V(2)+Ly-r))
+        Xp(1) = V(1) + 2 * r
         do while (Xp(1) <= (V(1)+Lx-r))
           part_count = part_count +1
           Xp(1) = Xp(1) + 2 * r
@@ -36,21 +37,22 @@ contains
       end do
       Xp(3) = Xp(3) + 2 * r
     end do
-    allocate (pt%x(part_count+10,3))
-
-    do i=1, Dim
-      Xp(i) = V(i) + r
-    end do    
-    write (*,*) "xp ", V(1)    
+    allocate (pt%x(part_count,3))
+    allocate (pt%rho(part_count))
+    allocate (pt%h(part_count))
+    
+    write (*,*) "Box particle count ", part_count
+    
+      Xp(:) = V(:) + r
+    write (*,*) "xp ", Xp(:)    
     !write(*,*) "Box Particle Count is ", part_count
     p = 1
     do while (Xp(3) <= (V(3)+Lz-r))
+      Xp(2) = V(2) + 2 * r
       do while (Xp(2) <= (V(2)+Ly-r))
+        Xp(1) = V(1) + 2 * r
         do while (Xp(1) <= (V(1)+Lx-r))
-          do i=1, Dim
-            pt%x(p,i) = Xp(i)
-            !write (*,*) "particle " ,p, " xp ", Xp(i)
-          end do 
+            pt%x(p,:) = Xp(:)
           p = p + 1
           Xp(1) = Xp(1) + 2 * r
         end do
@@ -58,6 +60,10 @@ contains
       end do 
       Xp(3) = Xp(3) + 2 * r
     end do
+  
+  do p = 1, part_count
+    pt%h(p) = h
+  end do
     
   end subroutine AddBoxLength
 
