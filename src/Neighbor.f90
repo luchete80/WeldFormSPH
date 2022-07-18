@@ -61,14 +61,15 @@ contains
     write (*,*) "Done, allocating cellno "
     !Calculate Cell properties
     do i = 1, Dim
-      if (real(ceiling((trpr(i)-blpf(i))/(cellfac*hmax)-(trpr(i)-blpf(i))/(cellfac*hmax)))<hmax/10.) then
+      if (real(ceiling((trpr(i)-blpf(i))/(cellfac*hmax))-((trpr(i)-blpf(i))/(cellfac*hmax))) < hmax/10.) then
         cellno(i) = (trpr(i)-blpf(i))/(cellfac*hmax)
       else 
         cellno(i) = floor((trpr(i)-blpf(i))/(cellfac*hmax))
       end if
     end do
     
-    cellsize(:) = TRPR(:)-BLPF(:)/real(CellNo(:))
+    print *, "test ", real(CellNo(:))
+    cellsize(:) = (TRPR(:)-BLPF(:))/real(CellNo(:))
 
     write (*, *) "Cell No ", cellno(:)
     write (*, *) "Cell Size ", cellsize(:)
@@ -91,9 +92,9 @@ contains
       !print *, "pt%x(a,d) ", pt%x(a,:), "blpf ", blpf, " cellsize", cellsize
       
       do d = 1, Dim
-        !print *, "test ",(pt%x(a,d)-blpf(d))/cellsize(d)
+        !print *, "test ",real(floor(pt%x(a,d)-blpf(d)))
         !write (*,*) "blpf(d) ",blpf(d), "cellsize ", cellsize(d)        
-        ijk = int(floor(pt%x(a,d)-blpf(d))/cellsize(d))
+        ijk = floor((pt%x(a,d)-blpf(d))/cellsize(d))
         !print *, "particle ", a, " ijk ", ijk(:)
         if (ijk(d) < 0) then
           ijk(d) = 0
@@ -105,7 +106,7 @@ contains
       temp = HOC(ijk(1)+1,ijk(2)+1,ijk(3)+1)
       HOC(ijk(1)+1,ijk(2)+1,ijk(3)+1) = a;
       ll(a) = temp
-      cc(a,:) = ijk(:)
+      cc(a,:) = ijk(:) + 1
     end do 
   print *, "List generation done, HOC ", HOC(:,:,:) 
 
