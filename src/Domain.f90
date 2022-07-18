@@ -8,7 +8,11 @@ integer :: Dim, part_count
 type(Particle)::pt
 
 contains 
-
+  subroutine Init()
+  
+  end subroutine Init
+  
+  
   subroutine AddBoxLength(tag, V, Lx, Ly, Lz, r, Density,  h)			
     integer, intent(in):: tag
     !real, intent(in), allocatable :: V
