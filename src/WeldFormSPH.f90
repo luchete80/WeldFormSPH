@@ -4,6 +4,8 @@ use ParticleData
 use Domain 
 use Neighbor 
 
+use omp_lib
+
 implicit none
 
 
@@ -11,7 +13,12 @@ implicit none
 
   real, dimension(1:3) :: V
   real :: dx, r, Rxy, Lz, h 
-  integer:: i
+  integer:: i,NProc, tnr, maxt
+  Nproc = 4
+  call omp_set_num_threads(4);
+  
+  maxt = omp_get_max_threads()
+  write( *, * ) 'Max threads ', maxt
   
   dx    = 0.005
   Rxy  = 0.15
@@ -29,6 +36,12 @@ implicit none
  !call AddCylinderLength(0, V, Rxy, Lz, r)
  
  call MainNeighbourSearch()
+  !$omp parallel do private(tnr)
+  do i = 1, 20
+     tnr = omp_get_thread_num()
+     write( *, * ) 'Thread', tnr, ':',  i
+  end do
+  !$omp end parallel do
 
 end program WeldFormSPH
 

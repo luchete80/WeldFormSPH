@@ -12,10 +12,12 @@ find_package(OpenMP_Fortran)
     # set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 # endif()
 
+#if GNU, 
+set (CMAKE_EXE_LINKER_FLAGS -fopenmp )
+
 file(GLOB_RECURSE sources  src/*.f90 src/*.h)
 add_executable(WeldFormSPH ${sources})
 
-target_link_libraries (WeldFormSPH OpenMP )
 
 # project(WeldFormGPUSPH Fortran CUDA)
 # find_package(CUDAToolkit REQUIRED)
