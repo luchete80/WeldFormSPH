@@ -4,14 +4,15 @@ use ParticleData
 
 implicit none 
 
-integer :: Dim, part_count
+integer :: Dim, part_count, Nproc
 type(Particle)::pt
 real, dimension(3):: dommax
 
 contains 
-  subroutine Init()
-  
-  end subroutine Init
+  subroutine DomInit(proc)
+    integer, intent(in)::proc
+    nproc = proc
+  end subroutine DomInit
   
   
   subroutine AddBoxLength(tag, V, Lx, Ly, Lz, r, Density,  h)			

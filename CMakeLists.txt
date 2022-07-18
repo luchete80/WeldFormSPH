@@ -13,10 +13,12 @@ find_package(OpenMP_Fortran)
 # endif()
 
 #if GNU, 
-set (CMAKE_EXE_LINKER_FLAGS -fopenmp )
+#set (CMAKE_EXE_LINKER_FLAGS "-fopenmp -Ofast -flto")
+set (CMAKE_EXE_LINKER_FLAGS "-fopenmp")
 
 file(GLOB_RECURSE sources  src/*.f90 src/*.h)
 add_executable(WeldFormSPH ${sources})
+add_executable (openmp examples/omptest.f90)
 
 
 # project(WeldFormGPUSPH Fortran CUDA)

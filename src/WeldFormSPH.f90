@@ -13,9 +13,9 @@ implicit none
 
   real, dimension(1:3) :: V
   real :: dx, r, Rxy, Lz, h 
-  integer:: i,NProc, tnr, maxt
-  Nproc = 2
-  !$ call omp_set_num_threads(2);
+  integer:: i, tnr, maxt
+  
+  !$ call omp_set_num_threads(4);
   
   maxt = omp_get_max_threads()
   write( *, * ) 'Max threads ', maxt
@@ -36,12 +36,13 @@ implicit none
  !call AddCylinderLength(0, V, Rxy, Lz, r)
  
  call MainNeighbourSearch()
-  !$omp parallel do private(tnr) 
-  !do i = 1, 20
-     tnr = omp_get_thread_num()
-     write( *, * ) 'Thread', tnr, ':'!,  i
-  !end do
-  !$omp end parallel do
+  !$omp parallel private(tnr) 
+  tnr = omp_get_thread_num()
+  do i = 1, 10000
+     !write( *, * ) 'Thread', tnr, ':'!,  i
+     print *, "Hello thread ",tnr  
+  end do
+  !$omp end parallel   
 
   ! !$omp parallel 
   ! !$omp do private(tnr)
@@ -58,12 +59,12 @@ implicit none
      ! write( *, * ) 'Thread', tnr, ':',  i
 
   ! !$omp end parallel
-  
+  call DomInit(4)
   call InitNb()
   call CellInitiate()
   call ListGenerate()
 
 !open (12,file='temp.log', status='old', position='APPEND')  
-  
+  print *, "Program End."
 end program WeldFormSPH
 
