@@ -23,9 +23,11 @@ contains
     allocate (ll(part_count))
     allocate (pair_count(Nproc))
     allocate (nbcount_t(part_count))
+    
     cellfac = 2.0
     hmax = pt%h(1)
     write(*,*) "hmax ", hmax
+    nballoc_pass = .false.
   end subroutine InitNb
 
   subroutine CellInitiate ()
@@ -44,6 +46,7 @@ contains
           trpr(i) = pt%x(p,i)
         end if
         if ( pt%x(p,i) < blpf(i) ) then 
+          !print *, "FOUND , part ", p, " dim ", i
           blpf(i) = pt%x(p,i)
         end if
         if ( pt%rho(p) > rhomax ) then 
@@ -68,7 +71,7 @@ contains
     cellsize(:) = TRPR(:)-BLPF(:)/real(CellNo(:))
 
     write (*, *) "Cell No ", cellno(:)
-    !write (*, *) "Cell Size ", cellsize(:)
+    write (*, *) "Cell Size ", cellsize(:)
     !Periodic BC correction
 
     !Initiate Head of Chain array for Linked-List
@@ -80,28 +83,31 @@ contains
   subroutine ListGenerate()
     use Domain
     implicit none
-  !  integer, intent(in)::part_count
-  !  integer, dimension(3), intent(in)::cellsize
     integer, dimension(3)::ijk
     integer ::a, d, temp
     
     do a = 1, part_count 
       !write (*,*) "Part ",a
+      !print *, "pt%x(a,d) ", pt%x(a,:), "blpf ", blpf, " cellsize", cellsize
+      
       do d = 1, Dim
-        !write (*,*) "blpf(d) ",blpf(d), "cellsize ", cellsize(d)
+        !print *, "test ",(pt%x(a,d)-blpf(d))/cellsize(d)
+        !write (*,*) "blpf(d) ",blpf(d), "cellsize ", cellsize(d)        
         ijk = int(floor(pt%x(a,d)-blpf(d))/cellsize(d))
+        !print *, "particle ", a, " ijk ", ijk(:)
         if (ijk(d) < 0) then
           ijk(d) = 0
-        else if (ijk(d) >= cellno(d)) then
+        else if (ijk(d) >= cellno(d)) then !Original  if (j>=CellNo[1])j=CellNo[1]-1;
           ijk(d)=CellNo(d)-1;
         end if  
       end do
       
-      temp = HOC(ijk(1),ijk(2),ijk(3))
-      HOC(ijk(1),ijk(2),ijk(3)) = a;
+      temp = HOC(ijk(1)+1,ijk(2)+1,ijk(3)+1)
+      HOC(ijk(1)+1,ijk(2)+1,ijk(3)+1) = a;
       ll(a) = temp
       cc(a,:) = ijk(:)
     end do 
+  print *, "List generation done, HOC ", HOC(:,:,:) 
 
   end subroutine ListGenerate
 
@@ -121,6 +127,7 @@ contains
     integer, intent(in)  :: q1
     integer :: q2, q3, temp1, temp2, t, i, j
     t = omp_get_thread_num()
+    print *,"******- thread ", t
     do q3 = 1, CellNo(3)
       do q2 = 1, CellNo(2)
         if (HOC(q1,q2,q3)== -1) then
@@ -172,9 +179,9 @@ contains
             end if
             temp1 = LL(temp1)        
           end do !temp1 .ne. -1 
-        end if
-      end do
-    end do
+        end if !HOC .ne. -1
+      end do !q2
+    end do !q3
   end subroutine YZPlaneCellsNeighbourSearch
 
   logical function CheckRadius(temp1, temp2)
@@ -206,7 +213,19 @@ contains
 
   subroutine MainNeighbourSearch()
   use omp_lib 
+  implicit none
+  integer :: q1
   PRINT *, "Hello from process: ", OMP_GET_THREAD_NUM()
+  !TODO: MAKE PERIODIC THINGS
+  !$omp parallel do 
+  !schedule (dynamic) num_threads(Nproc)
+  print *, "Cell no", CellNo
+  do q1=1, CellNo(1)
+    call YZPlaneCellsNeighbourSearch(q1)
+  end do
+  !$omp end parallel do
+  print *, "Nb Search done."
+  print *, "Pair count ", pair_count(:)
   end subroutine MainNeighbourSearch
 
   subroutine ClearNbData()

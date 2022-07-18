@@ -12,6 +12,7 @@ contains
   subroutine DomInit(proc)
     integer, intent(in)::proc
     nproc = proc
+    Dim = 3
   end subroutine DomInit
   
   
@@ -22,15 +23,14 @@ contains
     real, intent(in):: r, Lx, Ly, Lz, Density, h  
     real, dimension (1:3) :: Xp
     integer :: i, p
-    Dim = 3
 
     Xp(3) = V(3) + r
-    part_count = 1
-    do while (Xp(3) <= (V(3)+Lz-r))
-      Xp(2) = V(2) + 2 * r
-      do while (Xp(2) <= (V(2)+Ly-r))
-        Xp(1) = V(1) + 2 * r
-        do while (Xp(1) <= (V(1)+Lx-r))
+    part_count = 0
+    do while (Xp(3) <= (V(3)+Lz))
+      Xp(2) = V(2) + r
+      do while (Xp(2) <= (V(2)+Ly))
+        Xp(1) = V(1) + r
+        do while (Xp(1) <= (V(1)+Lx))
           part_count = part_count +1
           Xp(1) = Xp(1) + 2 * r
         end do
@@ -48,14 +48,16 @@ contains
     write (*,*) "xp ", Xp(:)    
     !write(*,*) "Box Particle Count is ", part_count
     p = 1
-    do while (Xp(3) <= (V(3)+Lz-r))
-      Xp(2) = V(2) + 2 * r
-      do while (Xp(2) <= (V(2)+Ly-r))
-        Xp(1) = V(1) + 2 * r
-        do while (Xp(1) <= (V(1)+Lx-r))
+    do while (Xp(3) <= (V(3)+Lz))
+      Xp(2) = V(2) + r
+      do while (Xp(2) <= (V(2)+Ly))
+        Xp(1) = V(1) + r
+        do while (Xp(1) <= (V(1)+Lx))
             pt%x(p,:) = Xp(:)
+          !print *,"particle ",p , "X: ",Xp(:)
           p = p + 1
           Xp(1) = Xp(1) + 2 * r
+
         end do
         Xp(2) = Xp(2) + 2 * r
       end do 

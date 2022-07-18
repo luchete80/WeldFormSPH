@@ -15,7 +15,7 @@ implicit none
   real :: dx, r, Rxy, Lz, h 
   integer:: i, tnr, maxt
   
-  !$ call omp_set_num_threads(4);
+  call omp_set_num_threads(4);
   
   maxt = omp_get_max_threads()
   write( *, * ) 'Max threads ', maxt
@@ -34,15 +34,20 @@ implicit none
  !write (*,*) "Particle", i ," position is ", pt%x(i,1), pt%x(i,1), pt%x(i,3)
  end do 
  !call AddCylinderLength(0, V, Rxy, Lz, r)
- 
- call MainNeighbourSearch()
-  !$omp parallel private(tnr) 
-  tnr = omp_get_thread_num()
-  do i = 1, 10000
-     !write( *, * ) 'Thread', tnr, ':'!,  i
-     print *, "Hello thread ",tnr  
-  end do
-  !$omp end parallel   
+
+  call DomInit(4)
+  call InitNb()
+  call CellInitiate()
+  call ListGenerate()
+  
+  call MainNeighbourSearch()
+  ! !$omp parallel do private(tnr) schedule (static,1) num_threads(Nproc)		
+  ! do i = 1, 100
+    ! tnr = omp_get_thread_num()
+     ! !write( *, * ) 'Thread', tnr, ':'!,  i
+     ! print *, "Hello thread ",tnr  
+  ! end do
+  ! !$omp end parallel do   
 
   ! !$omp parallel 
   ! !$omp do private(tnr)
@@ -59,10 +64,6 @@ implicit none
      ! write( *, * ) 'Thread', tnr, ':',  i
 
   ! !$omp end parallel
-  call DomInit(4)
-  call InitNb()
-  call CellInitiate()
-  call ListGenerate()
 
 !open (12,file='temp.log', status='old', position='APPEND')  
   print *, "Program End."
