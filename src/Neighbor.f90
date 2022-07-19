@@ -85,7 +85,7 @@ contains
     ! Override the calculated domain size
 
 	!!Because of Hexagonal close packing in x direction domain is modified
-	!if (!BC.Periodic[0]) {TRPR(0) += hmax/2;	BLPF(0) -= hmax/2;}else{TRPR(0) += R; BLPF(0) -= R;}
+	!if (!BC.Periodic(0)) {TRPR(0) += hmax/2;	BLPF(0) -= hmax/2;}else{TRPR(0) += R; BLPF(0) -= R;}
     trpr(:) = trpr(:) + hmax/2.0; blpf(:) = blpf(:) - hmax/2.0
     write (*,*) "trpr ", trpr(:)
     write (*,*) "blpf ", blpf(:)
@@ -130,7 +130,7 @@ contains
         !print *, "particle ", a, " ijk ", ijk(:)
         if (ijk(d) < 0) then
           ijk(d) = 0
-        else if (ijk(d) >= cellno(d)) then !Original  if (j>=CellNo[1])j=CellNo[1]-1;
+        else if (ijk(d) >= cellno(d)) then !Original  if (j>=CellNo(1))j=CellNo(1)-1;
           ijk(d)=CellNo(d)-1;
         end if  
       end do
@@ -184,7 +184,7 @@ contains
             end if ! (q1 + 1, q2 , q3)   
 
             !(q1 + a, q2 + 1, q3) & a(-1,1)
-            if (q2+1< CellNo(2)+1) then !(q2+1< CellNo[1])
+            if (q2+1< CellNo(2)+1) then !(q2+1< CellNo(1))
               do i = q1 - 1, q1 + 1 !for (int i = q1-1; i <= q1+1; i++) 
                 if (i<CellNo(1)+1 .and. i>=1) then !ORIG if (i<CellNo(0) .and. i>=0) 
                   temp2 = HOC(i,q2+1,q3)
@@ -277,8 +277,10 @@ contains
   end subroutine InitRedArraysOnce
   
   subroutine CalcPairPosList()
+    use omp_lib
     use Domain, only:nproc
-    integer :: p, j, pair_tot_count
+    implicit none 
+    integer :: p, i, j, pp, pair_tot_count
     first_pair_perproc(:) = 0
     pair_tot_count = 0
     do p=1, nproc
@@ -289,6 +291,28 @@ contains
       end if
       pair_tot_count = pair_tot_count + pair_count(p)   
     end do
+    
+    !!$omp parallel do 
+    Anei_t(:,:) = 0;Aref_t(:,:) = 0
+    ipair_t(:)=0; jpair_t(:)=0
+    !!$omp end parallel do     
+    
+    do p = 1, nproc
+      do pp = 1, pair_count(pp)
+        i = min(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
+        j = max(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
+        
+        Anei_t(i,ipair_t(i))                   = j  !!Only stores j>i
+        Anei_t(j,maxnbcount - 1 - jpair_t(j))  = i  !!Only stores j>i
+        
+        Aref_t(i,ipair_t(i)) = first_pair_perproc(p)+pp !!
+        Aref_t(j,maxnbcount - 1 - jpair_t(j)) = first_pair_perproc(p) + pp
+        
+        ipair_t(i) = ipair_t(i) + 1             !!ngji in 
+        jpair_t(j) = jpair_t(j) + 1             !!njli, pairs in which j has particles with index smaller than it        
+      end do ! pairs
+    end do !procs
+    
   end subroutine CalcPairPosList
   
 end module Neighbor
