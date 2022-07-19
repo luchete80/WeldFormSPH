@@ -43,6 +43,7 @@ contains
     allocate (pt%x(part_count,3))
     allocate (pt%rho(part_count))
     allocate (pt%h(part_count))
+    allocate (pt%m(part_count))
     
     write (*,*) "Box particle count ", part_count
     
@@ -66,9 +67,12 @@ contains
       Xp(3) = Xp(3) + 2 * r
     end do
   
-  do p = 1, part_count
-    pt%h(p) = h
-  end do
+    do p = 1, part_count
+      pt%h(p) = h
+    end do
+  
+    pt%m(:) = Density * Lx * Ly * Lz / part_count
+    print *, "Particle mass ", pt%m(2)
     
   end subroutine AddBoxLength
 

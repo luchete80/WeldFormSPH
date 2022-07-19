@@ -5,7 +5,7 @@ Module ParticleData
 Type Particle
   Integer, Dimension(:), Allocatable :: ID
   real, dimension(:,:), Allocatable :: x
-  real, dimension(:), Allocatable :: h, t, cs, rho !influence radius, temp
+  real, dimension(:), Allocatable :: h, t, cs, rho, m !influence radius, temp
   
 End Type
 
