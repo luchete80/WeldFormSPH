@@ -237,27 +237,28 @@ contains
       CheckRadius = .true.
     end if
   end function CheckRadius
-
+  
+  !IF Static
   subroutine AllocateNbPair(temp1, temp2, t)
     integer ,intent(in):: temp1,temp2, t
     if (CheckRadius(temp1,temp2))  then
+      !! THIS IS IF STATIC, FAILS
+      pair_count(t) = pair_count(t) + 1
       if (nballoc_pass) then 
         pairs_t(t,pair_count(t),1) = temp1    
         pairs_t(t,pair_count(t),2) = temp2
       endif
-      pair_count(t) = pair_count(t) +1
+
     end if
   end subroutine AllocateNbPair
 
   subroutine MainNeighbourSearch()
   use omp_lib 
+  use Domain, only : nproc
   implicit none
   integer :: q1
-  PRINT *, "Hello from process: ", OMP_GET_THREAD_NUM()
   !TODO: MAKE PERIODIC THINGS
-  !$omp parallel do 
-  !schedule (dynamic) num_threads(Nproc)
-  !print *, "Cell no", CellNo
+  !$omp parallel do num_threads(Nproc) private(q1) 
   do q1=1, CellNo(1)
     call YZPlaneCellsNeighbourSearch(q1)
   end do

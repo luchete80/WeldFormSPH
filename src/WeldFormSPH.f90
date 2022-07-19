@@ -38,6 +38,7 @@ implicit none
   call DomInit(4)
   call InitNb()
   call AllocateNbData()
+  
   call CellInitiate()
   call ListGenerate()
   
