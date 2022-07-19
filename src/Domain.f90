@@ -6,13 +6,15 @@ implicit none
 
 integer :: Dim, part_count, Nproc
 type(Particle)::pt
-real, dimension(3):: dommax
+real, dimension(3):: dommax, dommin
 
 contains 
   subroutine DomInit(proc)
     integer, intent(in)::proc
     nproc = proc
     Dim = 3
+    DomMax (:) = -100000000000.0;
+    DomMin (:) = 100000000000.0;
   end subroutine DomInit
   
   
