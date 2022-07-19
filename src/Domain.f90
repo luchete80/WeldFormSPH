@@ -44,6 +44,7 @@ contains
     allocate (pt%rho(part_count))
     allocate (pt%h(part_count))
     allocate (pt%m(part_count))
+    allocate (pt%cp_t(part_count))
     
     write (*,*) "Box particle count ", part_count
     
