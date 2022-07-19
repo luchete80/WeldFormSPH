@@ -42,9 +42,11 @@ implicit none
   call ListGenerate()
   
   call MainNeighbourSearch()
+  !call InitRedArraysOnce()
+  !call CalcPairPosList()
   
-  allocate (dTdt(part_count))
-  call CalcTempInc(dTdt)
+  !allocate (dTdt(part_count))
+  !call CalcTempInc(dTdt)
 
 !open (12,file='temp.log', status='old', position='APPEND')  
   print *, "Program End."

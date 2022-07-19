@@ -35,6 +35,8 @@ contains
     nballoc_pass = .false.
     
     call ClearNbData()
+    
+    maxnbcount = 80 !PER PARTICLE
   end subroutine InitNb
 
   subroutine AllocateNbData()
@@ -47,11 +49,14 @@ contains
     call MainNeighbourSearch();
     tot = 0
     do i = 1, nproc
-      tot = tot + pair_count(i)
+      if (pair_count(i)>tot) then
+      tot = pair_count(i)
+      !tot = tot + pair_count(i)
+      end if 
     end do
     tot = int (real(tot) * 1.25)
     print *, "Allocated ", tot, "pairs "
-    !allocate (pairs_t(nproc,tot,2))
+    allocate (pairs_t(nproc,tot,2))
     deallocate(HOC)
     call ClearNbData()
     nballoc_pass = .true.
@@ -64,6 +69,7 @@ contains
     !integer, dimension(3), intent(in)::cellsize
     integer:: i,p
     blpf(:) = pt%x(1,:)
+    trpr(:) = pt%x(1,:)
     
     write (*,*) "Looking for particles ", part_count
     do p=1, part_count
@@ -299,20 +305,26 @@ contains
     
     do p = 1, nproc
       do pp = 1, pair_count(pp)
+        print *, "proc, pair, i, j ", p, ", ", pp, ", ", i, ", " ,j
         i = min(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
         j = max(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
-        
+
+
         Anei_t(i,ipair_t(i))                   = j  !!Only stores j>i
-        Anei_t(j,maxnbcount - 1 - jpair_t(j))  = i  !!Only stores j>i
+        Anei_t(j,maxnbcount - jpair_t(j))  = i  !!Only stores j>i
         
-        Aref_t(i,ipair_t(i)) = first_pair_perproc(p)+pp !!
-        Aref_t(j,maxnbcount - 1 - jpair_t(j)) = first_pair_perproc(p) + pp
+        ! Aref_t(i,ipair_t(i)) = first_pair_perproc(p)+pp !!
+        ! Aref_t(j,maxnbcount - jpair_t(j)) = first_pair_perproc(p) + pp
         
         ipair_t(i) = ipair_t(i) + 1             !!ngji in 
         jpair_t(j) = jpair_t(j) + 1             !!njli, pairs in which j has particles with index smaller than it        
       end do ! pairs
     end do !procs
     
+    print *, "Nb part 1"
+    do i=1,maxnbcount
+      print *, Anei_t(1,i)
+    end do 
   end subroutine CalcPairPosList
   
 end module Neighbor
