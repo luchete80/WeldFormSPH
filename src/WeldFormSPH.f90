@@ -5,6 +5,7 @@ use Domain
 use Neighbor 
 use Thermal
 use omp_lib
+use Thermal
 
 implicit none
 
@@ -15,6 +16,8 @@ implicit none
   real :: dx, r, Rxy, Lz, h 
   integer:: i, tnr, maxt
   real,allocatable, dimension(:):: dTdt
+  real :: t_, deltat
+  
   call omp_set_num_threads(4);
   
   maxt = omp_get_max_threads()
@@ -46,9 +49,26 @@ implicit none
   call InitRedArraysOnce()
   call CalcPairPosList()
   
-  !allocate (dTdt(part_count))
-  !call CalcTempInc(dTdt)
-
+  allocate (dTdt(part_count))
+  
+  pt%t(:)     = 20.
+  pt%cp_t(:)  = 960.
+  pt%k_t(:)   = 120.  
+  pt%t(900:1000) = 100.
+  
+  deltat = 0.01
+  t_ = 0.
+  do while (t_ < 1.)
+    call CalcTempIncPart(dTdt)
+    print *, dTdt(900:1000)
+    pt%t(:) = pt%t(:) + dTdt(:) * deltat
+    
+    t_ = t_ + deltat
+  end do
+  !print *, "Temperatures "
+  !do p = 0, part_count
+   ! print *, pt%t(:) 
+  !end do
 !open (12,file='temp.log', status='old', position='APPEND')  
   print *, "Program End."
 end program WeldFormSPH

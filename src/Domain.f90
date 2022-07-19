@@ -44,7 +44,10 @@ contains
     allocate (pt%rho(part_count))
     allocate (pt%h(part_count))
     allocate (pt%m(part_count))
+    !! THERMAL
     allocate (pt%cp_t(part_count))
+    allocate (pt%t(part_count))
+    allocate (pt%k_t(part_count))
     
     write (*,*) "Box particle count ", part_count
     
@@ -72,7 +75,8 @@ contains
       pt%h(p) = h
     end do
   
-    pt%m(:) = Density * Lx * Ly * Lz / part_count
+    pt%m(:)   = Density * Lx * Ly * Lz / part_count
+    pt%rho(:) = Density
     print *, "Particle mass ", pt%m(2)
     
   end subroutine AddBoxLength

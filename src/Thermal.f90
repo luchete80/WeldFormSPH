@@ -16,7 +16,10 @@ contains
     xij(:) = pt%x(i,:) - pt%x(j,:)
     h = 0.5 * (pt%h(i) + pt%h(j))
     GK = GradKernel (norm2 (xij)/h,h)
-    CalcTempIncNb =  pt%m(j)/pt%rho(j) * 4. * ( pt%t(i) * pt%t(j)) / (pt%t(i) + pt%t(j)) * ( pt%t(i) - pt%t(j)) &
+    !print *, "GK ", GK
+    !print *, "norm xij " , norm2(xij)
+    !print *, "rho ", pt%rho(i), ", ", pt%rho(j)
+    CalcTempIncNb =  pt%m(j)/pt%rho(j) * 4. * ( pt%k_t(i) * pt%k_t(j)) / (pt%k_t(i) + pt%k_t(j)) * ( pt%t(i) - pt%t(j)) &
         * dot_product( xij , GK * xij )/ (norm2(xij)*norm2(xij)) 
   end function CalcTempIncNb
   
@@ -29,20 +32,27 @@ contains
     
     implicit none
     real, intent(out)::dTdt(part_count)
-    real :: m, GK, h, xij(3)
-    integer :: i, j, k, const
+    real :: m, GK, h, xij(3), const
+    integer :: i, j, k
+    
+    dTdt (:) = 0.
     !$omp parallel do num_threads(Nproc) 
     do i = 1, part_count
       const = 1.0/(pt%rho(i)*pt%cp_t(i))
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
-        dTdt(i) =  dTdt(i) + const * CalcTempIncNb(i, j)  
+        dTdt(i) =  dTdt(i) + CalcTempIncNb(i, j)  
+        !print *, "dTdt ", dTdt(i)
       end do
 
       do k = 1, jpair_t(i)   
-        j = Anei_t(i,maxnbcount - jpair_t(k)+1)
-        dTdt(i) = dTdt(i) + const * CalcTempIncNb(i, j)  
+        j = Anei_t(i,maxnbcount - k + 1)
+        dTdt(i) = dTdt(i) + CalcTempIncNb(i, j)  
+        !print *, "i, dTdt ", i, ", ", dTdt(i)
       end do
+      !print *, "rho cp",  pt%
+      dTdt(i) = dTdt(i)*const
+      !print *, "dTdt(i)", dTdt(i)
     end do
     !$omp end parallel do    
     !dTdt(i) = dTdt(i) + (1.0/Cp_t(i)) * (mass_t(j))
