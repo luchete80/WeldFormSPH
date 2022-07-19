@@ -32,13 +32,12 @@ contains
     
     implicit none
     real, intent(out)::dTdt(part_count)
-    real :: m, GK, h, xij(3), const
+    real :: m, GK, h, xij(3)
     integer :: i, j, k
     
     dTdt (:) = 0.
     !$omp parallel do num_threads(Nproc) 
     do i = 1, part_count
-      const = 1.0/(pt%rho(i)*pt%cp_t(i))
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
         dTdt(i) =  dTdt(i) + CalcTempIncNb(i, j)  
@@ -51,7 +50,7 @@ contains
         !print *, "i, dTdt ", i, ", ", dTdt(i)
       end do
       !print *, "rho cp",  pt%
-      dTdt(i) = dTdt(i)*const
+      dTdt(i) = dTdt(i)/(pt%rho(i)*pt%cp_t(i))
       !print *, "dTdt(i)", dTdt(i)
     end do
     !$omp end parallel do    

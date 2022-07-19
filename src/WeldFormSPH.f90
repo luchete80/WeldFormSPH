@@ -31,7 +31,7 @@ implicit none
 
  V(1) = 0.;V(2) = 0.;V(3) = 0.
  !AddBoxLength(tag, V, Lx, Ly, Lz, r, Density,  h)			
- call AddBoxLength(0, V, 1.0,1.0,1.0,r, 2700.0, h)
+ call AddBoxLength(0, V, 1.0,1.0,1.0,r, 1000.0, h)
  
  do i = 1, part_count
  !write (*,*) "Particle", i ," position is ", pt%x(i,1), pt%x(i,1), pt%x(i,3)
@@ -52,23 +52,21 @@ implicit none
   allocate (dTdt(part_count))
   
   pt%t(:)     = 20.
-  pt%cp_t(:)  = 960.
-  pt%k_t(:)   = 120.  
-  pt%t(900:1000) = 100.
+  pt%cp_t(:)  = 1.
+  pt%k_t(:)   = 3000.  
   
-  deltat = 0.01
+  deltat = 0.1
   t_ = 0.
-  do while (t_ < 1.)
+  do while (t_ < 10.0)
+    pt%t(900:1000) = 500.
     call CalcTempIncPart(dTdt)
     print *, dTdt(900:1000)
     pt%t(:) = pt%t(:) + dTdt(:) * deltat
     
     t_ = t_ + deltat
   end do
-  !print *, "Temperatures "
-  !do p = 0, part_count
-   ! print *, pt%t(:) 
-  !end do
+  print *, "Temperatures "
+  print *, pt%t(:) 
 !open (12,file='temp.log', status='old', position='APPEND')  
   print *, "Program End."
 end program WeldFormSPH
