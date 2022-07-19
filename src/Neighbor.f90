@@ -224,7 +224,7 @@ contains
   !TODO: MAKE PERIODIC THINGS
   !$omp parallel do 
   !schedule (dynamic) num_threads(Nproc)
-  print *, "Cell no", CellNo
+  !print *, "Cell no", CellNo
   do q1=1, CellNo(1)
     call YZPlaneCellsNeighbourSearch(q1)
   end do

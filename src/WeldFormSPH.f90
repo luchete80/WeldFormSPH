@@ -41,29 +41,6 @@ implicit none
   call ListGenerate()
   
   call MainNeighbourSearch()
-  ! !$omp parallel do private(tnr) schedule (static,1) num_threads(Nproc)		
-  ! do i = 1, 100
-    ! tnr = omp_get_thread_num()
-     ! !write( *, * ) 'Thread', tnr, ':'!,  i
-     ! print *, "Hello thread ",tnr  
-  ! end do
-  ! !$omp end parallel do   
-
-  ! !$omp parallel 
-  ! !$omp do private(tnr)
-  ! do i = 1, 20
-     ! tnr = omp_get_thread_num()
-     ! write( *, * ) 'Thread', tnr, ':',  i
-  ! end do
-  ! !$omp end do
-  ! !$omp end parallel
-
-  ! !$omp parallel
-  ! !$omp do private(tnr)
-     ! tnr = omp_get_thread_num()
-     ! write( *, * ) 'Thread', tnr, ':',  i
-
-  ! !$omp end parallel
 
 !open (12,file='temp.log', status='old', position='APPEND')  
   print *, "Program End."
