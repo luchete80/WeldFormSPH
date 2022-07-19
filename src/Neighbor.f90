@@ -264,7 +264,12 @@ contains
   end do
   !$omp end parallel do
   print *, "Nb Search done."
-  print *, "Pair count ", pair_count(:)
+  print *, "Pair count ", pair_count
+  if (nballoc_pass) then
+    do q1 = 1, nproc
+    print *, pairs_t(q1,pair_count(q1),1)
+    end do 
+  end if
   end subroutine MainNeighbourSearch
 
   subroutine ClearNbData()
@@ -291,40 +296,43 @@ contains
     first_pair_perproc(:) = 0
     pair_tot_count = 0
     do p=1, nproc
-      if ( p > 0 ) then 
-        do j = 1, p
-          first_pair_perproc(p) = first_pair_perproc(p) + pair_count(p)          
+      if ( p > 1 ) then 
+        do j = 1, p-1
+          first_pair_perproc(p) = first_pair_perproc(p) + pair_count(j)          
         end do
       end if
       pair_tot_count = pair_tot_count + pair_count(p)   
     end do
     
+    print *, "First pair per proc", first_pair_perproc
+    
     !!$omp parallel do 
     Anei_t(:,:) = 0;Aref_t(:,:) = 0
-    ipair_t(:)=0; jpair_t(:)=0
+    ipair_t(:)=1; jpair_t(:)=1
     !!$omp end parallel do     
     
     do p = 1, nproc
-      do pp = 1, pair_count(pp)
-        print *, "proc, pair, i, j ", p, ", ", pp, ", ", i, ", " ,j
+      do pp = 1, pair_count(p)
+        !print *, "proc, pair, i, j ", p, ", ", pp, ", ", i, ", " ,j
         i = min(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
         j = max(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
 
 
         Anei_t(i,ipair_t(i))                   = j  !!Only stores j>i
-        Anei_t(j,maxnbcount - jpair_t(j))  = i  !!Only stores j>i
+        Anei_t(j,maxnbcount - jpair_t(j)+1)  = i  !!Only stores j>i
         
-        ! Aref_t(i,ipair_t(i)) = first_pair_perproc(p)+pp !!
-        ! Aref_t(j,maxnbcount - jpair_t(j)) = first_pair_perproc(p) + pp
+        Aref_t(i,ipair_t(i)) = first_pair_perproc(p)+pp !!
+        Aref_t(j,maxnbcount - jpair_t(j)+1) = first_pair_perproc(p) + pp
         
         ipair_t(i) = ipair_t(i) + 1             !!ngji in 
         jpair_t(j) = jpair_t(j) + 1             !!njli, pairs in which j has particles with index smaller than it        
       end do ! pairs
+      print *, "***************"
     end do !procs
     
     print *, "Nb part 1"
     do i=1,maxnbcount
-      print *, Anei_t(1,i)
+      print *, Anei_t(100,i)
     end do 
   end subroutine CalcPairPosList
   

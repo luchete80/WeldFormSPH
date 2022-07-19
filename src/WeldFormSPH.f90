@@ -43,8 +43,8 @@ implicit none
   call ListGenerate()
   
   call MainNeighbourSearch()
-  !call InitRedArraysOnce()
-  !call CalcPairPosList()
+  call InitRedArraysOnce()
+  call CalcPairPosList()
   
   !allocate (dTdt(part_count))
   !call CalcTempInc(dTdt)
