@@ -1,1 +1,3 @@
 20220718 - Adding first Nb Search Algortihms
+20220719 - Fixed OpenMP compilation. Now parallelizes OK.
+           

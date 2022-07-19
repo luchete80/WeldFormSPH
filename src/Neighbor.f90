@@ -66,15 +66,15 @@ contains
     write (*,*) "Done, allocating cellno "
     !Calculate Cell properties
     do i = 1, Dim
-      if (real(ceiling((trpr(i)-blpf(i))/(cellfac*hmax))-((trpr(i)-blpf(i))/(cellfac*hmax))) < hmax/10.) then
-        cellno(i) = ceiling(trpr(i)-blpf(i))/(cellfac*hmax)
+      if (real(ceiling(((trpr(i)-blpf(i))/(cellfac*hmax)))-((trpr(i)-blpf(i))/(cellfac*hmax))) < hmax/10.) then
+        cellno(i) = ceiling((trpr(i)-blpf(i))/(cellfac*hmax))
       else 
-        cellno(i) = floor((trpr(i)-blpf(i))/(cellfac*hmax))
+        cellno(i) = floor(((trpr(i)-blpf(i))/(cellfac*hmax)))
       end if
     end do
     
     print *, "test ", real(CellNo(:))
-    cellsize(:) = (TRPR(:)-BLPF(:))/real(CellNo(:))
+    cellsize(:) = (trpr(:)-BLPF(:))/real(CellNo(:))
 
     write (*, *) "Cell No ", cellno(:)
     write (*, *) "Cell Size ", cellsize(:)
@@ -99,7 +99,7 @@ contains
       do d = 1, Dim
         !print *, "test ",real(floor(pt%x(a,d)-blpf(d)))
         !write (*,*) "blpf(d) ",blpf(d), "cellsize ", cellsize(d)        
-        ijk = floor((pt%x(a,d)-blpf(d))/cellsize(d))
+        ijk(d) = floor((pt%x(a,d)-blpf(d))/cellsize(d))
         !print *, "particle ", a, " ijk ", ijk(:)
         if (ijk(d) < 0) then
           ijk(d) = 0
