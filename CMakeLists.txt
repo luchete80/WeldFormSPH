@@ -15,8 +15,7 @@ else(OPENMP_FOUND)
 endif(OPENMP_FOUND)
 
 #if GNU, 
-#set (CMAKE_EXE_LINKER_FLAGS "-fopenmp -Ofast -flto")
-set (CMAKE_EXE_LINKER_FLAGS "-fopenmp")
+
 
 file(GLOB_RECURSE sources  src/*.f90 src/*.h)
 add_executable(WeldFormSPH ${sources})
