@@ -11,6 +11,11 @@ real :: rhomax, cellfac, hmax
 integer, allocatable, dimension(:,:,:) :: HOC, pairs_t! Head of chain, pairs (proc, first, second)
 integer, allocatable, dimension(:,:) :: cc !cell 
 integer, allocatable, dimension(:) :: LL, pair_count, nbcount_t    !Linked list, paircount (per thread)
+! REDUCTION ARRAYS (Nishimura)
+integer, allocatable, dimension(:,:) :: Anei_t, Aref_t
+integer, allocatable, dimension(:) :: ipair_t, jpair_t, first_pair_perproc ! ipair(part), jpair (part), first_pair_perproc(t)
+!-----
+
 logical :: nballoc_pass !Pass only
 integer, allocatable, dimension (:,:) :: Neib_t !Filled after pairs
 
@@ -27,7 +32,6 @@ contains
     
     cellfac = 2.0
     hmax = pt%h(1)
-    write(*,*) "hmax ", hmax
     nballoc_pass = .false.
     
     call ClearNbData()
@@ -48,7 +52,9 @@ contains
     tot = int (real(tot) * 1.25)
     print *, "Allocated ", tot, "pairs "
     !allocate (pairs_t(nproc,tot,2))
+    deallocate(HOC)
     call ClearNbData()
+    nballoc_pass = .true.
   end subroutine AllocateNbData
   
   subroutine CellInitiate ()
@@ -143,6 +149,7 @@ contains
     integer::a
     !do a=1, part_count
     ll(:) = -1
+    cc(:,:) = -1
     !end do
     !HOC(:,:,:) = -1 
     !deallocate(HOC)
@@ -260,4 +267,28 @@ contains
     call CellReset()
   end subroutine ClearNbData
 
+  subroutine InitRedArraysOnce()
+    use Domain, only : part_count, nproc
+    allocate(Anei_t(part_count,maxnbcount))
+    allocate(Aref_t(part_count,maxnbcount))
+    allocate (ipair_t(part_count))
+    allocate (jpair_t(part_count))
+    allocate (first_pair_perproc(nproc))
+  end subroutine InitRedArraysOnce
+  
+  subroutine CalcPairPosList()
+    use Domain, only:nproc
+    integer :: p, j, pair_tot_count
+    first_pair_perproc(:) = 0
+    pair_tot_count = 0
+    do p=1, nproc
+      if ( p > 0 ) then 
+        do j = 1, p
+          first_pair_perproc(p) = first_pair_perproc(p) + pair_count(p)          
+        end do
+      end if
+      pair_tot_count = pair_tot_count + pair_count(p)   
+    end do
+  end subroutine CalcPairPosList
+  
 end module Neighbor

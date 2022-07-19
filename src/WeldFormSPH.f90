@@ -3,7 +3,7 @@ use Integrate
 use ParticleData
 use Domain 
 use Neighbor 
-
+use Thermal
 use omp_lib
 
 implicit none
@@ -14,7 +14,7 @@ implicit none
   real, dimension(1:3) :: V
   real :: dx, r, Rxy, Lz, h 
   integer:: i, tnr, maxt
-  
+  real,allocatable, dimension(:):: dTdt
   call omp_set_num_threads(4);
   
   maxt = omp_get_max_threads()
@@ -42,6 +42,9 @@ implicit none
   call ListGenerate()
   
   call MainNeighbourSearch()
+  
+  allocate (dTdt(part_count))
+  call CalcTempInc(dTdt)
 
 !open (12,file='temp.log', status='old', position='APPEND')  
   print *, "Program End."
