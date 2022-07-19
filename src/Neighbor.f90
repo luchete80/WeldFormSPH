@@ -62,7 +62,7 @@ contains
     !Calculate Cell properties
     do i = 1, Dim
       if (real(ceiling((trpr(i)-blpf(i))/(cellfac*hmax))-((trpr(i)-blpf(i))/(cellfac*hmax))) < hmax/10.) then
-        cellno(i) = (trpr(i)-blpf(i))/(cellfac*hmax)
+        cellno(i) = ceiling(trpr(i)-blpf(i))/(cellfac*hmax)
       else 
         cellno(i) = floor((trpr(i)-blpf(i))/(cellfac*hmax))
       end if
