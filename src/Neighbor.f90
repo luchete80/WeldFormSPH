@@ -57,7 +57,11 @@ contains
     write (*,*) "trpr ", trpr(:)
     write (*,*) "blpf ", blpf(:)
     ! Override the calculated domain size
-    
+
+	!!Because of Hexagonal close packing in x direction domain is modified
+	!if (!BC.Periodic[0]) {TRPR(0) += hmax/2;	BLPF(0) -= hmax/2;}else{TRPR(0) += R; BLPF(0) -= R;}
+    TRPR(:) = TRPR(:) + hmax/2.0; blpf(:) = blpf(:) - hmax/2.0
+  
     write (*,*) "Done, allocating cellno "
     !Calculate Cell properties
     do i = 1, Dim
