@@ -5,6 +5,7 @@ implicit none
 
 ! Neighbor data
 integer, dimension(3):: cellno
+integer:: maxnbcount
 real, dimension(3):: blpf, trpr, cellsize
 real :: rhomax, cellfac, hmax
 integer, allocatable, dimension(:,:,:) :: HOC, pairs_t! Head of chain, pairs (proc, first, second)
@@ -32,6 +33,24 @@ contains
     call ClearNbData()
   end subroutine InitNb
 
+  subroutine AllocateNbData()
+    use Domain, only : nproc
+    implicit none
+    integer:: i, tot
+    
+    call CellInitiate()
+    call ListGenerate()
+    call MainNeighbourSearch();
+    tot = 0
+    do i = 1, nproc
+      tot = tot + pair_count(i)
+    end do
+    tot = int (real(tot) * 1.25)
+    print *, "Allocated ", tot, "pairs "
+    !allocate (pairs_t(nproc,tot,2))
+    call ClearNbData()
+  end subroutine AllocateNbData
+  
   subroutine CellInitiate ()
     use Domain
     implicit none
@@ -126,7 +145,7 @@ contains
     ll(:) = -1
     !end do
     !HOC(:,:,:) = -1 
-    
+    !deallocate(HOC)
   end subroutine CellReset
 
   subroutine YZPlaneCellsNeighbourSearch(q1)
