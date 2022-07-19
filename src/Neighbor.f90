@@ -28,6 +28,8 @@ contains
     hmax = pt%h(1)
     write(*,*) "hmax ", hmax
     nballoc_pass = .false.
+    
+    call ClearNbData()
   end subroutine InitNb
 
   subroutine CellInitiate ()
@@ -120,10 +122,10 @@ contains
   subroutine CellReset()
     use Domain, only : part_count
     integer::a
-    do a=1, part_count
-    ll(a) = -1
-    end do
-    HOC(:,:,:) = -1 
+    !do a=1, part_count
+    ll(:) = -1
+    !end do
+    !HOC(:,:,:) = -1 
     
   end subroutine CellReset
 
@@ -132,7 +134,7 @@ contains
     implicit none
     integer, intent(in)  :: q1
     integer :: q2, q3, temp1, temp2, t, i, j
-    t = omp_get_thread_num()
+    t = omp_get_thread_num() + 1
     print *,"******- thread ", t
     do q3 = 1, CellNo(3)
       do q2 = 1, CellNo(2)
@@ -142,27 +144,26 @@ contains
           do while (temp1 .ne. -1)
             temp2 = LL(temp1)
             do while (temp2 .ne. -1)
-              !AllocateNbPair(temp1,temp2,t)
+              call AllocateNbPair(temp1,temp2,t)
               temp2 = LL(temp2)
             end do 
           
             !(q1 + 1, q2 , q3)
-            if (q1+1 < CellNo(1)) then !!Original: if (q1+1 < CellNo(0)) 
+            if (q1+1 < CellNo(1)+1) then !!Original: if (q1+1 < CellNo(0)) 
               temp2 = HOC(q1+1,q2,q3)
               do while (temp2 .ne. -1) 
-                  !AllocateNbPair(temp1,temp2,T);
+                call AllocateNbPair(temp1,temp2,t)
                 temp2 = LL(temp2)
               end do !while temp2!=-1
             end if ! (q1 + 1, q2 , q3)   
 
             !(q1 + a, q2 + 1, q3) & a(-1,1)
-            if (q2+1< CellNo(2)) then
+            if (q2+1< CellNo(2)+1) then !(q2+1< CellNo[1])
               do i = q1 - 1, q1 + 1 !for (int i = q1-1; i <= q1+1; i++) 
-                if (i<CellNo(1) .and. i>=1) then !ORIG if (i<CellNo(0) .and. i>=0) 
+                if (i<CellNo(1)+1 .and. i>=1) then !ORIG if (i<CellNo(0) .and. i>=0) 
                   temp2 = HOC(i,q2+1,q3)
                   do while (temp2 .ne. -1)
-                  
-                    !AllocateNbPair(temp1,temp2,T);
+                    call AllocateNbPair(temp1,temp2,t)
                     temp2 = LL(temp2)
                   end do
                 end if
@@ -170,13 +171,13 @@ contains
             end if
 
             !(q1 + a, q2 + b, q3 + 1) & a,b(-1,1) => all 9 cells above the current cell
-            if (q3+1< CellNo(2)) then
+            if (q3+1< CellNo(3)+1) then
               do j = q2-1, q2 + 1 ! for (int j=q2-1; j<=q2+1; j++)
                 do i = q1 - 1, q1 + 1 ! for (int i=q1-1; i<=q1+1; i++) {
-                  if (i<CellNo(1) .and. i>=1 .and. j<CellNo(2) .and. j>=1) then ! if (i<CellNo(0) && i>=0 && j<CellNo(1) && j>=0) {
+                  if (i<CellNo(1)+1 .and. i>=1 .and. j<CellNo(2)+1 .and. j>=1) then ! if (i<CellNo(0) && i>=0 && j<CellNo(1) && j>=0) {
                     temp2 = HOC(i,j,q3+1)
                     do while (temp2 .ne. -1)
-                      ! AllocateNbPair(temp1,temp2,T);
+                      call AllocateNbPair(temp1,temp2,t)
                       temp2 = LL(temp2)
                     end do
                   end if
@@ -207,7 +208,6 @@ contains
 
   subroutine AllocateNbPair(temp1, temp2, t)
     integer ,intent(in):: temp1,temp2, t
-    integer:: i,j
     if (CheckRadius(temp1,temp2))  then
       if (nballoc_pass) then 
         pairs_t(t,pair_count(t),1) = temp1    
@@ -236,7 +236,7 @@ contains
 
   subroutine ClearNbData()
     pair_count (:) = 0
-    pairs_t(:,:,:) = 0
+    !pairs_t(:,:,:) = 0
     nbcount_t(:) = 0
     call CellReset()
   end subroutine ClearNbData
