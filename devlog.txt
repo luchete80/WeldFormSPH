@@ -1,4 +1,5 @@
 20220718 - Adding first Nb Search Algortihms
 20220719 - Fixed OpenMP compilation. Now parallelizes OK.
            Fixed All Neighbor pairs and reduction arrays. Everything is working.
-           Begining with Kernel
+           Aded cubic kernel.
+           Added thermal equation and example parallelized by particle.
