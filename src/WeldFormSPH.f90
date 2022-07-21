@@ -60,7 +60,7 @@ implicit none
   do while (t_ <= 0.001)
     pt%t(1:100) = 500.
     call CalcTempIncPart(dTdt)
-    print *, "dTdt 0",  dTdt(1)
+    !print *, "dTdt 0",  dTdt(1)
     pt%t(:) = pt%t(:) + dTdt(:) * deltat
     
     t_ = t_ + deltat

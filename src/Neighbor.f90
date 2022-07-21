@@ -317,9 +317,6 @@ contains
         i = min(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
         j = max(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
 
-        if (i==1 .or. j==1) then
-          print *, "i, j ", i, ", ", j
-        end if
         Anei_t(i,ipair_t(i)+1)            = j  !!Only stores j>i
         Anei_t(j,maxnbcount - jpair_t(j)) = i  !!Only stores j>i
         
