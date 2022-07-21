@@ -20,7 +20,7 @@ contains
     !print *, "norm xij " , norm2(xij)
     !print *, "rho ", pt%rho(i), ", ", pt%rho(j)
     CalcTempIncNb =  pt%m(j)/pt%rho(j) * 4. * ( pt%k_t(i) * pt%k_t(j)) / (pt%k_t(i) + pt%k_t(j)) * ( pt%t(i) - pt%t(j)) &
-        * dot_product( xij , GK * xij )/ (norm2(xij)*norm2(xij)) 
+        * dot_product( xij , GK * xij )/ (dot_product(xij,xij)) 
   end function CalcTempIncNb
   
   !! TRADITIONAL FORM (SLOW)

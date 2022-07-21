@@ -17,7 +17,9 @@ implicit none
   integer:: i, tnr, maxt
   real,allocatable, dimension(:):: dTdt
   real :: t_, deltat
+  real :: start, finish
   
+    
   call omp_set_num_threads(4);
   
   maxt = omp_get_max_threads()
@@ -55,9 +57,10 @@ implicit none
   pt%cp_t(:)  = 1.
   pt%k_t(:)   = 3000.  
   
+  call cpu_time(start)
   deltat = 0.001
   t_ = 0.
-  do while (t_ <= 0.001)
+  do while (t_ <= 2.0)
     pt%t(1:100) = 500.
     call CalcTempIncPart(dTdt)
     !print *, "dTdt 0",  dTdt(1)
@@ -73,6 +76,8 @@ implicit none
     write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%t(i) 
   end do
   close(1) 
+  call cpu_time(finish)
+  print '("Time = ",f6.3," seconds.")',finish-start
   print *, "Program End."
 end program WeldFormSPH
 
