@@ -50,7 +50,7 @@ implicit none
   call CalcPairPosList()
   
   allocate (dTdt(part_count))
-  
+  !allocate (temp_pair())
   pt%t(:)     = 20.
   pt%cp_t(:)  = 1.
   pt%k_t(:)   = 3000.  

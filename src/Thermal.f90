@@ -1,7 +1,7 @@
 module Thermal
 
 !Include mat_const.inc
-
+real, allocatable, dimension(:) :: temp_pair
 contains
   real function CalcTempIncNb(i, j)
     use omp_lib
