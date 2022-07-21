@@ -308,7 +308,7 @@ contains
     
     !!$omp parallel do 
     Anei_t(:,:) = 0;Aref_t(:,:) = 0
-    ipair_t(:)=1; jpair_t(:)=1
+    ipair_t(:)=0; jpair_t(:)=0
     !!$omp end parallel do     
     
     do p = 1, nproc
@@ -317,12 +317,14 @@ contains
         i = min(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
         j = max(pairs_t(p,pp,1),pairs_t(p,pp,2)) 
 
-
-        Anei_t(i,ipair_t(i))                   = j  !!Only stores j>i
-        Anei_t(j,maxnbcount - jpair_t(j)+1)  = i  !!Only stores j>i
+        if (i==1 .or. j==1) then
+          print *, "i, j ", i, ", ", j
+        end if
+        Anei_t(i,ipair_t(i)+1)            = j  !!Only stores j>i
+        Anei_t(j,maxnbcount - jpair_t(j)) = i  !!Only stores j>i
         
-        Aref_t(i,ipair_t(i)) = first_pair_perproc(p)+pp !!
-        Aref_t(j,maxnbcount - jpair_t(j)+1) = first_pair_perproc(p) + pp
+        Aref_t(i,ipair_t(i)+1)            = first_pair_perproc(p) + pp !!
+        Aref_t(j,maxnbcount - jpair_t(j)) = first_pair_perproc(p) + pp
         
         ipair_t(i) = ipair_t(i) + 1             !!ngji in 
         jpair_t(j) = jpair_t(j) + 1             !!njli, pairs in which j has particles with index smaller than it        
@@ -330,10 +332,6 @@ contains
       print *, "***************"
     end do !procs
     
-    print *, "Nb part 1"
-    do i=1,maxnbcount
-      print *, Anei_t(100,i)
-    end do 
   end subroutine CalcPairPosList
   
 end module Neighbor

@@ -3,3 +3,5 @@
            Fixed All Neighbor pairs and reduction arrays. Everything is working.
            Aded cubic kernel.
            Added thermal equation and example parallelized by particle.
+20220721 - Working Thermal Solver.
+ 

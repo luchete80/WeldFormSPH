@@ -36,16 +36,27 @@ contains
     integer :: i, j, k
     
     dTdt (:) = 0.
-    !$omp parallel do num_threads(Nproc) 
+    
+    !!$omp parallel do num_threads(Nproc) private (i,j,k)
     do i = 1, part_count
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
+        if (i==1) then
+          print *, "ipair ", ipair_t(i)
+          print *, "i, j, temp ", i, ", ", j, ", ", CalcTempIncNb(i, j)  
+          print *, "xj" , pt%x(j,:)
+        end if
         dTdt(i) =  dTdt(i) + CalcTempIncNb(i, j)  
         !print *, "dTdt ", dTdt(i)
       end do
 
       do k = 1, jpair_t(i)   
         j = Anei_t(i,maxnbcount - k + 1)
+        if (i==1) then
+          print *, "jpair ", jpair_t(i)
+          print *, "i, j, temp ", i, ", " , j, ", ", CalcTempIncNb(i, j)  
+
+        end if 
         dTdt(i) = dTdt(i) + CalcTempIncNb(i, j)  
         !print *, "i, dTdt ", i, ", ", dTdt(i)
       end do
@@ -53,8 +64,8 @@ contains
       dTdt(i) = dTdt(i)/(pt%rho(i)*pt%cp_t(i))
       !print *, "dTdt(i)", dTdt(i)
     end do
-    !$omp end parallel do    
-    !dTdt(i) = dTdt(i) + (1.0/Cp_t(i)) * (mass_t(j))
+    !!$omp end parallel do    
+
   end subroutine CalcTempIncPart
 
 end module Thermal

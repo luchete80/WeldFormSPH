@@ -55,19 +55,24 @@ implicit none
   pt%cp_t(:)  = 1.
   pt%k_t(:)   = 3000.  
   
-  deltat = 0.1
+  deltat = 0.001
   t_ = 0.
-  do while (t_ < 10.0)
-    pt%t(900:1000) = 500.
+  do while (t_ <= 0.001)
+    pt%t(1:100) = 500.
     call CalcTempIncPart(dTdt)
-    print *, dTdt(900:1000)
+    print *, "dTdt 0",  dTdt(1)
     pt%t(:) = pt%t(:) + dTdt(:) * deltat
     
     t_ = t_ + deltat
   end do
-  print *, "Temperatures "
-  print *, pt%t(:) 
-!open (12,file='temp.log', status='old', position='APPEND')  
+  
+  open (1,file='temp.csv')!, position='APPEND')  
+  write (1,*) "X, Y, Z, temp"
+
+  do i=1,part_count  
+    write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%t(i) 
+  end do
+  close(1) 
   print *, "Program End."
 end program WeldFormSPH
 
