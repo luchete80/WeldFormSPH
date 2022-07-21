@@ -77,7 +77,8 @@ implicit none
   end do
   close(1) 
   call cpu_time(finish)
-  print '("Time = ",f6.3," seconds.")',finish-start
+  print *,'Time: ', t_ 
+  print '("CPU Time = ",f6.3," seconds.")',finish-start
   print *, "Program End."
 end program WeldFormSPH
 
