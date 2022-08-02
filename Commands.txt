@@ -1,0 +1,1 @@
+cmake ..\WeldFormSPH -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=RELEASE

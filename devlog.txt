@@ -4,4 +4,5 @@
            Aded cubic kernel.
            Added thermal equation and example parallelized by particle.
 20220721 - Working Thermal Solver.
+20220802 - Begining to add mechanical things.
  
