@@ -6,6 +6,7 @@ use Neighbor
 use Thermal
 use omp_lib
 use Thermal
+use Mechanical
 
 implicit none
 

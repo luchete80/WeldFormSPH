@@ -10,7 +10,7 @@ contains
     use Kernels
     implicit none
 
-    real :: K, GK, h, xij(3), vij(3), cij, muij, rij
+    real :: K, GK, h, xij(3), vij(3), cij, muij, rij, temp(3,3), PIij(3,3)
     integer,intent(in) :: i, j 
 
     xij(:) = pt%x(i,:) - pt%x(j,:)
@@ -28,6 +28,7 @@ contains
     end if
     !Assuming Gradient Type 0
     !Mult( GK*xij , ( 1.0/(di*di)*Sigmai + 1.0/(dj*dj)*Sigmaj + PIij + TIij ) , temp);
+    !temp = matmul(GK*xij, PIij)
     
   end function CalcAccIncNb
 
