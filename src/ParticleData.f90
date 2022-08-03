@@ -1,17 +1,17 @@
 
 ! TYPE Struct Of Arrays (SOA), for better GPU performance
 Module ParticleData 
-
+  use ModPrecision, only : fp_kind
 Type Particle
   Integer, Dimension(:), Allocatable :: ID
-  real, dimension(:,:), Allocatable :: x
+  real(fp_kind), dimension(:,:), Allocatable :: x
   !GENERAL
-  real, dimension(:), Allocatable :: h, t, cs, rho, m !influence radius, temp
+  real(fp_kind), dimension(:), Allocatable :: h, t, cs, rho, m !influence radius, temp
   !THERMAL
-  real, dimension(:), allocatable :: cp_t, k_t
+  real(fp_kind), dimension(:), allocatable :: cp_t, k_t
   !Mechanical
-  !real, dimension(:), allocatable :: cs
-  real, dimension(:,:), allocatable :: v
+  !real(fp_kind), dimension(:), allocatable :: cs
+  real(fp_kind), dimension(:,:), allocatable :: v
   
 End Type
 
