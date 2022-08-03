@@ -55,44 +55,21 @@ implicit none
   call CalcPairPosList()
   
   allocate (dTdt(part_count))
-  allocate (temp_pair(part_count))
+  allocate (temp_pair(pair_tot_count))
   pt%t(:)     = 20.
   pt%cp_t(:)  = 1.
   pt%k_t(:)   = 3000.  
   
   print *, "Size of floating point: ", sizeof(pt%t(1))
 
-  ! print *,'Reduction by particle... '  
-  ! call cpu_time(start)
-  ! deltat = 0.001
-  ! t_ = 0.
-  ! do while (t_ <= 2.0)
-    ! pt%t(1:100) = 500.
-    ! call CalcTempIncPart(dTdt)
-    ! !print *, "dTdt 0",  dTdt(1)
-    ! pt%t(:) = pt%t(:) + dTdt(:) * deltat
-    
-    ! t_ = t_ + deltat
-  ! end do
+  call cpu_time(start)
+  deltat = 0.001
   
-  ! open (1,file='temp.csv')!, position='APPEND')  
-  ! write (1,*) "X, Y, Z, temp"
-
-  ! do i=1,part_count  
-    ! write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%t(i) 
-  ! end do
-  ! close(1) 
-  ! call cpu_time(finish)
-  ! print *,'Time: ', t_ 
-  ! print '("CPU Time = ",f6.3," seconds.")',finish-start
-  ! print *, "Program End."
-
-  print *,'Reduction by pair... '
+  print *,'Reduction by particle... '    
   t_ = 0.
   do while (t_ <= 2.0)
     pt%t(1:100) = 500.
-    call CalcTempInc()
-    !call TempReduction(dTdt)
+    call CalcTempIncPart(dTdt)
     !print *, "dTdt 0",  dTdt(1)
     pt%t(:) = pt%t(:) + dTdt(:) * deltat
     
@@ -101,8 +78,40 @@ implicit none
   
   open (1,file='temp.csv')!, position='APPEND')  
   write (1,*) "X, Y, Z, temp"
+
+  do i=1,part_count  
+    write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%t(i) 
+  end do
+  close(1) 
+  call cpu_time(finish)
   print *,'Time: ', t_ 
   print '("CPU Time = ",f6.3," seconds.")',finish-start
   print *, "Program End."
+
+
+  print *,'Reduction by pair... '
+  call cpu_time(start)
+  t_ = 0.
+  do while (t_ <= 2.0)
+    pt%t(1:100) = 500.
+    call CalcTempInc()
+    call TempReduction(dTdt)
+    !print *, "dTdt 0",  dTdt(1)
+    pt%t(:) = pt%t(:) + dTdt(:) * deltat
+    
+    t_ = t_ + deltat
+  end do
+  call cpu_time(finish)
+  
+  open (1,file='temp.csv')!, position='APPEND')  
+  write (1,*) "X, Y, Z, temp"
+  print *,'Time: ', t_ 
+  print '("CPU Time = ",f6.3," seconds.")',finish-start
+  print *, "Program End."
+  do i=1,part_count  
+    write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%t(i) 
+  end do
+  close(1) 
+  
 end program WeldFormSPH
 

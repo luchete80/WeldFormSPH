@@ -5,7 +5,7 @@ implicit none
 
 ! Neighbor data
 integer, dimension(3):: cellno
-integer:: maxnbcount
+integer:: maxnbcount, pair_tot_count
 real, dimension(3):: blpf, trpr, cellsize
 real :: rhomax, cellfac, hmax
 integer, allocatable, dimension(:,:,:) :: HOC, pairs_t! Head of chain, pairs (proc, first, second)
@@ -292,7 +292,7 @@ contains
     use omp_lib
     use Domain, only:nproc
     implicit none 
-    integer :: p, i, j, pp, pair_tot_count
+    integer :: p, i, j, pp
     first_pair_perproc(:) = 0
     pair_tot_count = 0
     do p=1, nproc

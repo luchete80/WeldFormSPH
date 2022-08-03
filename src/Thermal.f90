@@ -70,9 +70,8 @@ contains
     real(fp_kind) :: GK, h, xij(3), nijinv,gkij(3)
     integer :: i, j, p, pp
     !!$omp parallel do num_threads(nproc) private (p,pp, i,j,h)
-    !$omp parallel do num_threads(nproc) private (p,pp)
+    !$omp parallel do num_threads(nproc) private (p,pp, i,j,h)
     do p = 1, nproc
-      !print *, "pair count ", pair_count(1)
       do pp = 1, pair_count(p)
         i = pairs_t(p,pp,1)
         j = pairs_t(p,pp,2)
@@ -80,8 +79,8 @@ contains
         h = 0.5 * (pt%h(i) + pt%h(j))
         GK = GradKernel (norm2 (xij)/h,h)
         !print *, "pair ", pp
-        !temp_pair(first_pair_perproc(p) + pp ) = pt%m(j)/pt%rho(j) * 4. * ( pt%k_t(i) * pt%k_t(j)) / (pt%k_t(i) + pt%k_t(j)) & 
-        !    * ( pt%t(i) - pt%t(j)) * dot_product( xij , GK * xij )/ (dot_product(xij,xij)) 
+        temp_pair(first_pair_perproc(p) + pp ) = pt%m(j)/pt%rho(j) * 4. * ( pt%k_t(i) * pt%k_t(j)) / (pt%k_t(i) + pt%k_t(j)) & 
+           * ( pt%t(i) - pt%t(j)) * dot_product( xij , GK * xij )/ (dot_product(xij,xij)) 
       end do ! pairs
     end do !procs
     !$omp end parallel do    
@@ -100,7 +99,8 @@ contains
     real(fp_kind), intent(out)::dTdt(part_count)
     integer :: i,n
     
-    !$omp parallel do num_threads(nproc) private (i,n) schedule (static) 
+    !$omp parallel do num_threads(nproc) private (i,n) 
+    !schedule (static) 
     do i = 1, part_count
       do n = 1, ipair_t(i)  
         dTdt(i) = dTdt(i) + pt%rho(Anei_t(i,n)) * temp_pair(Anei_t(i,n))
