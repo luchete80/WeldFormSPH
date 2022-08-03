@@ -38,7 +38,8 @@ contains
     
     dTdt (:) = 0.
     
-   !$omp parallel do num_threads(Nproc) private (i,j,k)
+   !$omp parallel do num_threads(Nproc) private (i,j,k) 
+   !schedule (static)
     do i = 1, part_count
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
@@ -70,7 +71,7 @@ contains
     real(fp_kind) :: GK, h, xij(3), nijinv,gkij(3)
     integer :: i, j, p, pp
     !!$omp parallel do num_threads(nproc) private (p,pp, i,j,h)
-    !$omp parallel do num_threads(nproc) private (p,pp, i,j,h)
+    !$omp parallel do num_threads(nproc) private (p,pp, i,j,h) schedule (static)
     do p = 1, nproc
       do pp = 1, pair_count(p)
         i = pairs_t(p,pp,1)
@@ -99,8 +100,7 @@ contains
     real(fp_kind), intent(out)::dTdt(part_count)
     integer :: i,n
     
-    !$omp parallel do num_threads(nproc) private (i,n) 
-    !schedule (static) 
+    !$omp parallel do num_threads(nproc) private (i,n) schedule (static) 
     do i = 1, part_count
       do n = 1, ipair_t(i)  
         dTdt(i) = dTdt(i) + pt%rho(Anei_t(i,n)) * temp_pair(Anei_t(i,n))
