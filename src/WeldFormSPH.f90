@@ -7,19 +7,19 @@ use Thermal
 use omp_lib
 use Thermal
 use Mechanical
-
+use ModPrecision, only : fp_kind
 implicit none
 
 
 !Type(Particle), POINTER :: pt
 
-  real, dimension(1:3) :: V
-  real :: dx, r, Rxy, Lz, h 
+  real(fp_kind), dimension(1:3) :: V
+  real(fp_kind) :: dx, r, Rxy, Lz, h 
   integer:: i, tnr, maxt
-  real,allocatable, dimension(:):: dTdt
-  real :: t_, deltat
-  real :: start, finish
-  
+  real(fp_kind),allocatable, dimension(:):: dTdt
+  real(fp_kind) :: t_, deltat
+  real(fp_kind) :: start, finish
+  real(fp_kind) :: L, rho 
     
   call omp_set_num_threads(4);
   
@@ -32,14 +32,16 @@ implicit none
   r = dx / 2.0
   h = dx * 1.2
 
- V(1) = 0.;V(2) = 0.;V(3) = 0.
- !AddBoxLength(tag, V, Lx, Ly, Lz, r, Density,  h)			
- call AddBoxLength(0, V, 1.0,1.0,1.0,r, 1000.0, h)
- 
- do i = 1, part_count
- !write (*,*) "Particle", i ," position is ", pt%x(i,1), pt%x(i,1), pt%x(i,3)
- end do 
- !call AddCylinderLength(0, V, Rxy, Lz, r)
+  V(1) = 0.;V(2) = 0.;V(3) = 0.
+  !AddBoxLength(tag, V, Lx, Ly, Lz, r, Density,  h)		
+  L = 1.	
+  rho = 1000.
+  call AddBoxLength(0, V, L, L, L, r, rho, h)
+
+  do i = 1, part_count
+  !write (*,*) "Particle", i ," position is ", pt%x(i,1), pt%x(i,1), pt%x(i,3)
+  end do 
+  !call AddCylinderLength(0, V, Rxy, Lz, r)
 
   call DomInit(4)
   call InitNb()
@@ -57,6 +59,8 @@ implicit none
   pt%t(:)     = 20.
   pt%cp_t(:)  = 1.
   pt%k_t(:)   = 3000.  
+  
+  print *, "Size of floating point: ", sizeof(pt%t(1))
   
   call cpu_time(start)
   deltat = 0.001

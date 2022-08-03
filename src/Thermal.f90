@@ -1,16 +1,17 @@
 module Thermal
 
+use ModPrecision, only : fp_kind
 !Include mat_const.inc
-real, allocatable, dimension(:) :: temp_pair
+real(fp_kind), allocatable, dimension(:) :: temp_pair
 contains
-  real function CalcTempIncNb(i, j)
+  real(fp_kind) function CalcTempIncNb(i, j)
     use omp_lib
     use Domain
     use Neighbor
     use Kernels
     implicit none
     
-    real :: GK, h, xij(3), nijinv,gkij(3)
+    real(fp_kind) :: GK, h, xij(3), nijinv,gkij(3)
     integer,intent(in) :: i, j 
 
     xij(:) = pt%x(i,:) - pt%x(j,:)
@@ -31,8 +32,8 @@ contains
     use Kernels
     
     implicit none
-    real, intent(out)::dTdt(part_count)
-    real :: m, GK, h, xij(3)
+    real(fp_kind), intent(out)::dTdt(part_count)
+    real(fp_kind) :: m, GK, h, xij(3)
     integer :: i, j, k
     
     dTdt (:) = 0.

@@ -1,11 +1,13 @@
 module Kernels
 
-real, parameter :: m_pi = 3.1415926
+use ModPrecision, only : fp_kind
+
+real(fp_kind), parameter :: m_pi = 3.1415926
 contains
 
-  real function Kernel(q, h)
-  
-		real :: C
+  real(fp_kind) function Kernel(q, h)
+    real(fp_kind), intent(in) :: q,h
+		real(fp_kind) :: C
 
     !Qubic Spline
     !Dim == 2 ? C = 10.0/(7.0*h*h*M_PI) : C = 1.0/(h*h*h*M_PI);
@@ -19,8 +21,9 @@ contains
     end if
   end function Kernel
 
-	real function GradKernel(q, h)
-		real::C
+	real(fp_kind) function GradKernel(q, h)
+    real(fp_kind), intent(in) :: q,h
+		real(fp_kind)::C
     C = 1.0/(h*h*h*h*m_pi)
 				!Dim ==2 ? C = 10.0/(7.0*h*h*h*M_PI) : C = 1.0/(h*h*h*h*M_PI);
 

@@ -1,12 +1,13 @@
 module Domain
 use ParticleData
+use ModPrecision, only : fp_kind
 !use Neighbor 
 
 implicit none 
 
 integer :: Dim, part_count, Nproc
 type(Particle)::pt
-real, dimension(3):: dommax, dommin
+real(fp_kind), dimension(3):: dommax, dommin
 
 contains 
   subroutine DomInit(proc)
@@ -20,10 +21,10 @@ contains
   
   subroutine AddBoxLength(tag, V, Lx, Ly, Lz, r, Density,  h)			
     integer, intent(in):: tag
-    !real, intent(in), allocatable :: V
-    real, dimension(1:3), intent(in)  :: V ! input
-    real, intent(in):: r, Lx, Ly, Lz, Density, h  
-    real, dimension (1:3) :: Xp
+    !real(fp_kind), intent(in), allocatable :: V
+    real(fp_kind), dimension(1:3), intent(in)  :: V ! input
+    real(fp_kind), intent(in):: r, Lx, Ly, Lz, Density, h  
+    real(fp_kind), dimension (1:3) :: Xp
     integer :: i, p
 
     Xp(3) = V(3) + r
@@ -90,10 +91,10 @@ contains
 !-------------------------------------------------------------------
   ! integer function CalcHalfPartCount(ri, R, xinc)
     ! implicit none 
-    ! real, intent(in):: ri, R
+    ! real(fp_kind), intent(in):: ri, R
     ! integer intent (in):: xinc
     ! !decls
-    ! real :: xp, yp, rad
+    ! real(fp_kind) :: xp, yp, rad
     ! integer:: ypartcount(-1)
     ! ! if ( xinc > 0 )
       ! ! ypartcount = 1
@@ -113,12 +114,12 @@ contains
   subroutine AddCylinderLength(tag, V, Rxy, Lz, r)
     implicit none 
     integer, intent(in):: tag
-    !real, intent(in), allocatable :: V
-    real, dimension(1:), intent(in)  :: V ! input
-    real, intent(in):: r, Lz, Rxy
+    !real(fp_kind), intent(in), allocatable :: V
+    real(fp_kind), dimension(1:), intent(in)  :: V ! input
+    real(fp_kind), intent(in):: r, Lz, Rxy
     !Function vars definitions
     integer :: k
-    real :: zp 
+    real(fp_kind) :: zp 
     zp = V(2) + r
     
     write(*,*) "Vector value is ", r
