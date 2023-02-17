@@ -15,7 +15,7 @@ implicit none
 
   real(fp_kind), dimension(1:3) :: V
   real(fp_kind) :: dx, r, Rxy, Lz, h 
-  integer:: i, tnr, maxt
+  integer:: i, tnr, maxt ,nn
   real(fp_kind),allocatable, dimension(:):: dTdt
   real(fp_kind) :: t_, deltat
   real(fp_kind) :: start, finish
@@ -26,7 +26,7 @@ implicit none
   maxt = omp_get_max_threads()
   write( *, * ) 'Max threads ', maxt
   
-  dx    = 0.04
+  dx    = 0.02
   Rxy  = 0.15
   Lz = 0.56
   r = dx / 2.0
@@ -68,7 +68,9 @@ implicit none
   
   print *,'Reduction by particle... '    
   t_ = 0.
-    pt%t(1:400) = 500.
+  
+  nn=(L/dx)*(L/dx)
+    pt%t(1:nn) = 500.
   do while (t_ <= 100.0*deltat)
 
     call CalcTempIncPart(dTdt)
