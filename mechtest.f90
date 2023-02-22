@@ -22,7 +22,7 @@ implicit none
   h	= dx*1.2 
   r = dx/2.
   
-  call AddCylinderLength(0, V, Rxy, Lz+Lz/10., r) !(tag, V, Rxy, Lz, r)
+  call AddCylinderLength(0, V, Rxy, Lz + 2.0 * Lz/10., r) !(tag, V, Rxy, Lz, r)
 
   print *, "Program End."
 
