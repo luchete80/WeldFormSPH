@@ -24,7 +24,7 @@ contains
         * dot_product( xij , GK * xij )/ (dot_product(xij,xij)) 
   end function CalcTempIncNb
   
-  !! TRADITIONAL FORM (SLOW)
+  !! TRADITIONAL FORM (THIS WOULD APPEAR TO BE SLOW, BUT FOR NOW IS THE FASTEST ALGORITHM)
   subroutine CalcTempIncPart(dTdt) !parallelized by particle
     use omp_lib
     use Domain

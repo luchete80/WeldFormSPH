@@ -11,7 +11,10 @@ Type Particle
   real(fp_kind), dimension(:), allocatable :: cp_t, k_t
   !Mechanical
   !real(fp_kind), dimension(:), allocatable :: cs
-  real(fp_kind), dimension(:,:), allocatable :: v
+  real(fp_kind), dimension(:,:), allocatable :: v, a
+  real(fp_kind), dimension(:,:,:), allocatable :: sigma, str_rate, rot_rate
+  
+  Integer solver_type
   
 End Type
 

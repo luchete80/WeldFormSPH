@@ -71,9 +71,10 @@ implicit none
   
   nn=(L/dx)*(L/dx)
     pt%t(1:nn) = 500.
+  !!! FASTEST ALGORITHM
   do while (t_ <= 100.0*deltat)
 
-    call CalcTempIncPart(dTdt)
+    call CalcTempIncPart(dTdt) !THIS IS THE FASTEST BY NOW
     !print *, "dTdt 0",  dTdt(1)
     pt%t(:) = pt%t(:) + dTdt(:) * deltat
     

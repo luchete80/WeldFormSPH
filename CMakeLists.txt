@@ -30,6 +30,17 @@ endif()
 file(GLOB_RECURSE sources  src/*.f90 src/*.h)
 add_executable(WeldFormSPH ${sources})
 add_executable (openmp examples/omptest.f90)
+add_executable (mechtest mechtest.f90
+                          src/Domain.f90
+                          src/Functions.f90
+                          src/Integrate.f90
+                          src/Kernel.f90
+                          src/Mechanical.f90
+                          src/Neighbor.f90
+                          src/ParticleData.f90
+                          src/Precision.f90
+                          src/SolverFraser.f90
+                          )
 
 
 

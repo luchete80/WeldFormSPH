@@ -80,6 +80,13 @@ contains
     pt%rho(:) = Density
     print *, "Particle mass ", pt%m(2)
     
+    !MECHANICAL PROPERTIES
+    !if (solver_type==1) then 
+    allocate (pt%v(part_count,3))
+    allocate (pt%a(part_count,3))
+    allocate (pt%sigma(part_count,3,3))
+    !end if
+    
   end subroutine AddBoxLength
 
 !-------------------------------------------------------------------
@@ -89,27 +96,34 @@ contains
 !-     ri: particle separation 
 !-     R: radius
 !-------------------------------------------------------------------
-  ! integer function CalcHalfPartCount(ri, R, xinc)
-    ! implicit none 
-    ! real(fp_kind), intent(in):: ri, R
-    ! integer intent (in):: xinc
-    ! !decls
-    ! real(fp_kind) :: xp, yp, rad
-    ! integer:: ypartcount(-1)
-    ! ! if ( xinc > 0 )
-      ! ! ypartcount = 1
-      ! ! yp = r
-      ! ! xp = r + (xinc - 1 ) *2.*r; 
-      ! ! rad = sqrt(yp*yp + xp*xp);
-      ! ! do while( rad <= R -r )
-        ! ! yp += 2.*r;
-        ! ! rad = sqrt(yp*yp + xp*xp);
-        ! ! ypartcount++;
-      ! ! end 
-      ! ! ypartcount-=1;
+  integer function CalcHalfPartCount(ri, R, xinc)
+    implicit none 
+    real(fp_kind), intent(in):: ri, R
+    integer, intent (in):: xinc
+    !decls
+    real(fp_kind) :: xp, yp, rad
+    integer:: ypartcount
     
-    ! CalcHalfPartCount =  ypartcount
-  ! end function CalcHalfPartCount
+    ypartcount = -1
+    
+      
+    if ( xinc > 0 ) then
+      ypartcount = 1
+      yp = r
+      xp = r + (xinc - 1 ) *2.*r; 
+      rad = sqrt(yp*yp + xp*xp);
+      do while( rad <= R -r )
+        yp = yp + 2.*r;
+        rad = sqrt(yp*yp + xp*xp);
+        ypartcount = ypartcount + 1;
+      end do 
+      ypartcount = ypartcount - 1;
+    end if
+    
+    CalcHalfPartCount =  ypartcount
+  end function CalcHalfPartCount
+  
+
   
   subroutine AddCylinderLength(tag, V, Rxy, Lz, r)
     implicit none 
@@ -117,17 +131,21 @@ contains
     !real(fp_kind), intent(in), allocatable :: V
     real(fp_kind), dimension(1:), intent(in)  :: V ! input
     real(fp_kind), intent(in):: r, Lz, Rxy
+    real(fp_kind), dimension (1:3) :: Xp
+    real(fp_kind) :: numpartxy
     !Function vars definitions
     integer :: k
-    real(fp_kind) :: zp 
-    zp = V(2) + r
+
+    Xp(3) = V(3) + r
+    numpartxy = calcHalfPartCount(r, Rxy, 1)
     
     write(*,*) "Vector value is ", r
     !Calculate row count for non ghost particles
     k=0
-    do while (zp <= (V(3)+Lz -r) )
+    do while (Xp(3) <= (V(3)+Lz -r) )
       k = k + 1 
-      zp = zp + 2.* r      
+      Xp(3) = Xp(3) + 2.* r    
+      !Xp(2) = V(2) - r - (2.*r*(numpartxy - 1) ); //First increment is radius, following ones are 2r      
     end do
     write(*,*) "Cylinder row count is ", k
     
