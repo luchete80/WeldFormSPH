@@ -8,6 +8,7 @@ use Thermal
 use omp_lib
 use Thermal
 use Mechanical
+use Solver
 use ModPrecision, only : fp_kind
 
 implicit none
@@ -24,6 +25,8 @@ implicit none
   
   call AddCylinderLength(0, V, Rxy, Lz + 2.0 * Lz/10., r) !(tag, V, Rxy, Lz, r)
 
+  !call SolveDiffUpdateFraser(0.01,1.0e-4)
+  
   print *, "Program End."
 
 end program MechTest

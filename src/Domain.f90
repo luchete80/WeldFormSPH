@@ -36,6 +36,7 @@ contains
     
     allocate (pt%v(part_count,3))
     allocate (pt%a(part_count,3))
+    allocate (pt%disp(part_count,3))
     
     allocate (pt%sigma(part_count,3,3))
     allocate (pt%str_rate(part_count,3,3))
