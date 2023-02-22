@@ -123,8 +123,6 @@ contains
     CalcHalfPartCount =  ypartcount
   end function CalcHalfPartCount
   
-
-  
   subroutine AddCylinderLength(tag, V, Rxy, Lz, r)
     implicit none 
     integer, intent(in):: tag
@@ -132,22 +130,39 @@ contains
     real(fp_kind), dimension(1:), intent(in)  :: V ! input
     real(fp_kind), intent(in):: r, Lz, Rxy
     real(fp_kind), dimension (1:3) :: Xp
-    real(fp_kind) :: numpartxy
+    real(fp_kind) :: numpartxy,numxpart,numypart, yinc_sign
     !Function vars definitions
-    integer :: k
+    integer :: i,j,k, part_per_row, xinc, yinc
 
     Xp(3) = V(3) + r
     numpartxy = calcHalfPartCount(r, Rxy, 1)
+    write(*,*) "Particles at plane xy: ", numpartxy
     
+    part_per_row = 0
     write(*,*) "Vector value is ", r
     !Calculate row count for non ghost particles
     k=0
     do while (Xp(3) <= (V(3)+Lz -r) )
       k = k + 1 
-      Xp(3) = Xp(3) + 2.* r    
-      !Xp(2) = V(2) - r - (2.*r*(numpartxy - 1) ); //First increment is radius, following ones are 2r      
+      Xp(3) = Xp(3) + 2.* r
+      numypart = 2*numpartxy
+      do j=1,numypart
+				numxpart = calcHalfPartCount(r, Rxy, yinc)
+				do i=1,numxpart
+					if (Xp(3) == V(2)+r) then
+						part_per_row = part_per_row  + 1
+            
+          end if
+        end do !i
+				Xp(1) = V(1) - r - (2.*r*(numxpart - 1) ) !First increment is radius, following ones are 2r
+      end do !j
+      part_per_row = part_per_row + 1      
+      !Xp(2) = V(2) - r - (2.*r*(numpartxy - 1) ); //First increment is radius, following ones are 2r     
+      write(*,*) "xp3", Xp(3)      
     end do
     write(*,*) "Cylinder row count is ", k
+    
+    write(*,*) "Particle count is ", part_per_row
     
   end subroutine AddCylinderLength
 
