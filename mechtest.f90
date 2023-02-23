@@ -24,7 +24,14 @@ implicit none
   h	= dx*1.2 
   r = dx/2.
   
-  call AddCylinderLength(0, V, Rxy, Lz + 2.0 * Lz/10., r) !(tag, V, Rxy, Lz, r)
+  !! MATERIAL
+  real(fp_kind)::rho
+  
+  rho = 1.
+  
+  !call AddCylinderLength(0, V, Rxy, Lz + 2.0 * Lz/10., r) !(tag, V, Rxy, Lz, r)
+  
+  call AddBoxLength(0, V, Lz, Lz, Lz, r, rho, h)
 
 
   dt = 1.e-4
