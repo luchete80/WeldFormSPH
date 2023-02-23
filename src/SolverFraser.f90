@@ -23,15 +23,15 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   call InitNb()
   call AllocateNbData()
   
-  ! call CellInitiate()
-  ! call ListGenerate()
+  call CellInitiate()
+  call ListGenerate()
   
-  ! call MainNeighbourSearch()
-  ! call InitRedArraysOnce()
-  ! call CalcPairPosList()
+  call MainNeighbourSearch()
+  call InitRedArraysOnce()
+  call CalcPairPosList()
   
   ! do while (tf <= 100.0*dt)
-    ! call CalcDensIncPart
+    call CalcDensIncPart
     ! call CalcRateTensorsPart
     ! call CalcStressStrain(dt)
     ! call CalcAccelPart

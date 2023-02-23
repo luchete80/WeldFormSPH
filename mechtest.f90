@@ -32,14 +32,15 @@ implicit none
   
   rho = 1.
   
-  call AddCylinderLength(0, V, Rxy, Lz + 2.0 * Lz/10., r, rho, h) !(tag, V, Rxy, Lz, r)
+  ! CALLING NBS TO THIS DOMAIN  STALLS THE PROGRAM
+  !call AddCylinderLength(0, V, Rxy, Lz + 2.0 * Lz/10., r, rho, h) !(tag, V, Rxy, Lz, r)
   
-  !call AddBoxLength(0, V, Lz, Lz, Lz, r, rho, h)
+  call AddBoxLength(0, V, Lz, Lz, Lz, r, rho, h)
 
 
   dt = 1.e-4
   t = 0.01
-  !call SolveDiffUpdateFraser(t,dt)
+  call SolveDiffUpdateFraser(t,dt)
   
   open (1,file='test.csv')!, position='APPEND')  
   write (1,*) "X, Y, Z, temp"
