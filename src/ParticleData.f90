@@ -12,7 +12,8 @@ Type Particle
   !Mechanical
   !real(fp_kind), dimension(:), allocatable :: cs
   real(fp_kind), dimension(:,:), allocatable :: v, a, disp
-  real(fp_kind), dimension(:,:,:), allocatable :: sigma, str_rate, rot_rate
+  real(fp_kind), dimension(:,:,:), allocatable :: sigma, str_rate, rot_rate, shear_stress
+  real(fp_kind), dimension(:), allocatable:: pressure, strain
   
   Integer solver_type
   

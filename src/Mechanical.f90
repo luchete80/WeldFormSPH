@@ -241,4 +241,51 @@ contains
     !$omp end parallel do      
   end subroutine CalcDensIncPart
   
+  
+  
+  subroutine CalcStressStrain (dt) 
+  use Domain
+	!Pressure = EOS(PresEq, Cs, P0,Density, RefDensity)
+
+	!!!!Jaumann rate terms
+	!Mat3_t RotationRateT, Stress,SRT,RS;
+	!Trans(RotationRate,RotationRateT);
+	!Mult(ShearStress,RotationRateT,SRT);
+	!Mult(RotationRate,ShearStress,RS);
+  implicit none
+  real(fp_kind) :: RotationRateT(3,3), Stress(3,3), SRT(3,3), RS(3,3), ident(3,3)
+  integer :: i
+  real(fp_kind) ,intent(in):: dt
+  
+  ident = 0.
+  ident (1,1) = 1; ident (2,2) = 1.0; ident (3,3) = .1
+  
+  !$omp parallel do num_threads(Nproc) private (RotationRateT, Stress, SRT, RS)
+  do i = 1, part_count
+    RotationRateT = transpose (pt%rot_rate(i,:,:))
+    SRT = MatMul(pt%shear_stress(i,:,:),RotationRateT)
+    RS  = MatMul(pt%rot_rate(i,:,:), pt%shear_stress(i,:,:))
+    
+    pt%shear_stress(i,:,:)	= dt * (2.0 * mat_G *(pt%str_rate(i,:,:)-1.0/3.0 * &
+                                 (pt%str_rate(i,1,1)+pt%str_rate(i,2,2)+pt%str_rate(i,3,3))*ident) &
+                                 +SRT+RS) + pt%shear_stress(i,:,:)
+    pt%sigma(i,:,:)			= -pt%pressure(i) * ident + pt%shear_stress(i,:,:)	!Fraser, eq 3.32
+    !pt%strain(i)			= dt*pt%str_rate(i + Strain;
+  end do
+  !$omp end parallel do    
+	!double dep = 0.;
+  !double sig_trial = 0.;
+
+	!ShearStress	= dt*(2.0*G*(StrainRate-1.0/3.0*(StrainRate(0,0)+StrainRate(1,1)+StrainRate(2,2))*OrthoSys::I)+SRT+RS) + ShearStress;
+
+  !! FAIL : TODO
+
+	!Sigma			= -Pressure * OrthoSys::I + ShearStress;	//Fraser, eq 3.32
+	
+  
+	!!!!!if ( dep > 0.0 ) 
+  !Strain	= dt*StrainRate + Strain;
+
+  end subroutine CalcStressStrain
+
 end module Mechanical

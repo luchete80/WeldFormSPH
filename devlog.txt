@@ -7,9 +7,10 @@
 20220802 - Begining to add mechanical things.
 20220803 - Added reduction by pair in Thermal Solver. Still with errors. 
 -----------------------------------------------------------------------
-20230223 - Working with elasticity.
+20230222 - Working with elasticity.
            Added and allocated accel,  sigma 
            Interaction between particles corrected (it was dummy)
            Added strain rate and rotation rate calculations
            Added cylinder domain generator
+20230223 - Elasticity. Added stress calculation.
            

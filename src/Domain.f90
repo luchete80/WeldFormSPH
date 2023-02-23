@@ -9,6 +9,8 @@ integer :: Dim, part_count, Nproc
 type(Particle)::pt
 real(fp_kind), dimension(3):: dommax, dommin
 
+real(fp_kind)::mat_G, mat_E!TODO: change to material
+
 contains 
   subroutine DomInit(proc)
     integer, intent(in)::proc
@@ -41,6 +43,9 @@ contains
     allocate (pt%sigma(part_count,3,3))
     allocate (pt%str_rate(part_count,3,3))
     allocate (pt%rot_rate(part_count,3,3))
+    allocate (pt%shear_stress(part_count,3,3))
+    allocate (pt%strain(part_count))
+    allocate (pt%pressure(part_count))
     
     !end if  
   end subroutine
