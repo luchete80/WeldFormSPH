@@ -17,6 +17,10 @@ implicit none
   real(fp_kind):: r, Lz, Rxy, dx, h 
   
   real(fp_kind):: dt, t
+  !! MATERIAL
+  real(fp_kind)::rho
+  integer :: i
+  
   Lz = 0.56
   Rxy = 0.15
   
@@ -24,20 +28,26 @@ implicit none
   h	= dx*1.2 
   r = dx/2.
   
-  !! MATERIAL
-  real(fp_kind)::rho
+
   
   rho = 1.
   
-  !call AddCylinderLength(0, V, Rxy, Lz + 2.0 * Lz/10., r) !(tag, V, Rxy, Lz, r)
+  call AddCylinderLength(0, V, Rxy, Lz + 2.0 * Lz/10., r, rho, h) !(tag, V, Rxy, Lz, r)
   
-  call AddBoxLength(0, V, Lz, Lz, Lz, r, rho, h)
+  !call AddBoxLength(0, V, Lz, Lz, Lz, r, rho, h)
 
 
   dt = 1.e-4
   t = 0.01
-  call SolveDiffUpdateFraser(t,dt)
+  !call SolveDiffUpdateFraser(t,dt)
   
+  open (1,file='test.csv')!, position='APPEND')  
+  write (1,*) "X, Y, Z, temp"
+
+  do i=1,part_count  
+    write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%t(i) 
+  end do
+  close(1)
   
   print *, "Program End."
 

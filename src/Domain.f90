@@ -170,10 +170,10 @@ contains
     id_part = 1
     do while (Xp(3) <= (V(3)+Lz -r) )
       numypart = 2*numpartxy
-      Xp(2) = V(2) - r - (2.*r*(numxpart - 1) ) !First increment is radius, following ones are 2r
+      Xp(2) = V(2) - r - (2.*r*(numpartxy - 1) ) !First increment is radius, following ones are 2r
 			yinc = numpartxy !particle row from the axis
 			yinc_sign = -1
-      write(*,*) "y part ", numypart
+      !write(*,*) "y part ", numypart
       do j=1,numypart
         !write(*,*) "j ", j
 				numxpart = calcHalfPartCount(r, Rxy, yinc)
@@ -182,19 +182,22 @@ contains
           !write(*,*) "i ", i
           if (mem_alloc .eqv. .TRUE.) then 
             pt%x(id_part,:) = Xp(:)
+            id_part = id_part + 1
           end if
 					if (Xp(3) == V(3)+r) then
 						part_per_row = part_per_row  + 1            
           end if
+          Xp(1) = Xp(1) + 2.0 * r
         end do !i
 				yinc = yinc + yinc_sign
-				if (yinc<1) then 
+				Xp(2) = Xp(2) + 2.0 * r
+        if (yinc<1) then 
 					yinc = 1
 					yinc_sign = 1
 				end if
       end do !j 
       !Xp(2) = V(2) - r - (2.*r*(numpartxy - 1) ); //First increment is radius, following ones are 2r     
-      write(*,*) "xp3", Xp(3)      
+      !write(*,*) "xp3", Xp(3)      
       k = k + 1 
       Xp(3) = Xp(3) + 2.* r
     end do
@@ -205,12 +208,12 @@ contains
     AllocateCylXY = 2.0 * part_per_row * k 
   end function AllocateCylXY
   
-  subroutine AddCylinderLength(tag, V, Rxy, Lz, r)
+  subroutine AddCylinderLength(tag, V, Rxy, Lz, r, Density, h)
     implicit none 
     integer, intent(in):: tag
     !real(fp_kind), intent(in), allocatable :: V
     real(fp_kind), dimension(1:), intent(in)  :: V ! input
-    real(fp_kind), intent(in):: r, Lz, Rxy
+    real(fp_kind), intent(in):: r, Lz, Rxy, Density, h
     real(fp_kind), dimension (1:3) :: Xp
     real(fp_kind) :: numpartxy,numxpart,numypart, yinc_sign
     !Function vars definitions
@@ -221,6 +224,9 @@ contains
     call AllocateParticles(part_count)
     part_count = AllocateCylXY(V, Rxy, Lz, r, .true.) !First allocate
 
+    pt%m(:)   = 3.1415926 * Density * Rxy * Rxy * Lz / part_count
+    pt%rho(:) = Density
+    print *, "Particle mass ", pt%m(1)
     
   end subroutine AddCylinderLength
 
