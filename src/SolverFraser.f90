@@ -12,7 +12,7 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   use Kernels
   implicit none
  
- real(fp_kind)::tf, dt
+  real(fp_kind),intent(in)::tf, dt
  
   real(fp_kind),dimension(3)::du
   integer :: i
@@ -33,6 +33,7 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   do while (tf <= 100.0*dt)
     call CalcDensIncPart
     call CalcRateTensorsPart
+    call CalcStressStrain(dt)
     call CalcAccelPart
     
     !$omp parallel do num_threads(Nproc) private (du)

@@ -16,6 +16,7 @@ implicit none
   real(fp_kind), dimension(1:3) :: V
   real(fp_kind):: r, Lz, Rxy, dx, h 
   
+  real(fp_kind):: dt, t
   Lz = 0.56
   Rxy = 0.15
   
@@ -25,7 +26,11 @@ implicit none
   
   call AddCylinderLength(0, V, Rxy, Lz + 2.0 * Lz/10., r) !(tag, V, Rxy, Lz, r)
 
-  !call SolveDiffUpdateFraser(0.01,1.0e-4)
+
+  dt = 1.e-4
+  t = 0.01
+  call SolveDiffUpdateFraser(t,dt)
+  
   
   print *, "Program End."
 
