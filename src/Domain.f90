@@ -228,6 +228,8 @@ contains
     pt%rho(:) = Density
     print *, "Particle mass ", pt%m(1)
     
+    pt%h(:) = h
+    
   end subroutine AddCylinderLength
 
 end module Domain
