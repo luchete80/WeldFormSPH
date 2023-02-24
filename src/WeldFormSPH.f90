@@ -20,13 +20,19 @@ implicit none
   real(fp_kind) :: t_, deltat
   real(fp_kind) :: start, finish
   real(fp_kind) :: L, rho 
+
+   ! Variables for clock
+   integer count_0, count_1
+   integer count_rate, count_max
+   double precision time_init, time_final, elapsed_time
+
     
   call omp_set_num_threads(12);
   
   maxt = omp_get_max_threads()
   write( *, * ) 'Max threads ', maxt
   
-  dx    = 0.02
+  dx    = 0.03
   Rxy  = 0.15
   Lz = 0.56
   r = dx / 2.0
@@ -62,12 +68,17 @@ implicit none
   
   print *, "Size of floating point: ", sizeof(pt%t(1))
 
-  call cpu_time(start)
+  !call cpu_time(start)
   !deltat = 0.00036
   deltat = 0.3*h*h*rho*pt%cp_t(1)/pt%k_t(1)	
   
   print *,'Reduction by particle... '    
   t_ = 0.
+
+   ! Starting time
+   call system_clock(count_0, count_rate, count_max)
+   time_init = count_0*1.0/count_rate
+
   
   nn=(L/dx)*(L/dx)
     pt%t(1:nn) = 500.
@@ -81,7 +92,17 @@ implicit none
     t_ = t_ + deltat
   end do
 
-  call cpu_time(finish)
+  ! Ending time
+  call system_clock(count_1, count_rate, count_max)
+  time_final = count_1*1.0/count_rate
+  ! Elapsed time
+  elapsed_time = time_final - time_init
+
+  ! Write elapsed time
+  write(*,1003) int(elapsed_time),elapsed_time-int(elapsed_time)
+  !write(*,*) "Elapsed time: ", int(elapsed_time),elapsed_time-int(elapsed_time)
+   
+  !call cpu_time(finish)
   print *,'Time: ', t_ 
   print '("CPU Time = ",f6.3," seconds.")',finish-start
   print *, "Program End."
@@ -119,6 +140,8 @@ implicit none
     ! write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%t(i) 
   ! end do
   ! close(1) 
+
+  1003 format('  Elapsed Time  = ',i0,f0.9)
   
 end program WeldFormSPH
 
