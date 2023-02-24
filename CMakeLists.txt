@@ -28,7 +28,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
 endif()
 
 file(GLOB_RECURSE sources  src/*.f90 src/*.h)
-add_executable(WeldFormSPH ${sources})
+#add_executable(WeldFormSPH ${sources})
 add_executable (openmp examples/omptest.f90)
 add_executable (mechtest mechtest.f90
                           src/Domain.f90

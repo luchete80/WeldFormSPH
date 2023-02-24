@@ -46,6 +46,9 @@ contains
     allocate (pt%shear_stress(part_count,3,3))
     allocate (pt%strain(part_count))
     allocate (pt%pressure(part_count))
+    allocate (pt%cs(part_count))
+    
+    allocate (pt%rho_0(part_count))
     
     !end if  
   end subroutine
@@ -73,14 +76,8 @@ contains
       end do
       Xp(3) = Xp(3) + 2 * r
     end do
-    allocate (pt%x(part_count,3))
-    allocate (pt%rho(part_count))
-    allocate (pt%h(part_count))
-    allocate (pt%m(part_count))
-    !! THERMAL
-    allocate (pt%cp_t(part_count))
-    allocate (pt%t(part_count))
-    allocate (pt%k_t(part_count))
+    
+    call AllocateParticles(part_count)
     
     write (*,*) "Box particle count ", part_count
     
@@ -109,7 +106,8 @@ contains
     end do
   
     pt%m(:)   = Density * Lx * Ly * Lz / part_count
-    pt%rho(:) = Density
+    pt%rho(:)   = Density
+    pt%rho_0(:) = Density
     print *, "Particle mass ", pt%m(2)
     
     

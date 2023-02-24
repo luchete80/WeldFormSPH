@@ -190,23 +190,22 @@ contains
   end subroutine CalcRateTensorsPart
   
   real(fp_kind) function CalcDensIncNb(i, j)
+    use omp_lib
     use Domain
+    use Neighbor
     use Kernels
     
     implicit none
-    !real(fp_kind), intent(out)::dTdt(part_count)
     real(fp_kind) :: GK, k, xij(3), h, rij, vij(3)
     integer,intent(in) :: i, j 
-
+    
     xij(:) = pt%x(i,:) - pt%x(j,:)
     vij(:) = pt%v(i,:) - pt%v(j,:)
     h = 0.5 * (pt%h(i) + pt%h(j))
     
     rij = norm2(xij)
-    ! print *, "Calculate kernel" 
     GK = GradKernel (rij/h,h)
-    print *, "Calculated kernal", rij 
-    !CalcDensIncNb = dot_product(vij,GK*xij)
+    CalcDensIncNb = dot_product(vij,GK*xij)
     
   end function CalcDensIncNb
   
@@ -223,32 +222,32 @@ contains
     !dTdt (:) = 0.
     
    write (*,*) "ipair_t(i)   ", ipair_t(i)   
-   !!$omp parallel do num_threads(Nproc) private (i,j,k) 
+   !$omp parallel do num_threads(Nproc) private (i,j,k) 
    !schedule (static)
     do i = 1, part_count
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
-        write (*,*) "j nei ", j
         pt%rho(i) =  pt%rho(i) + pt%rho(i)/pt%rho(j) * CalcDensIncNb(i, j)
         !print *, "dTdt ", dTdt(i)
       end do
 
       do k = 1, jpair_t(i)   
-        !j = Anei_t(i,maxnbcount - k + 1)
-        !pt%rho(i) = pt%rho(i) + pt%rho(i)/pt%rho(j)  * CalcDensIncNb(i, j)  
+        j = Anei_t(i,maxnbcount - k + 1)
+        pt%rho(i) = pt%rho(i) + pt%rho(i)/pt%rho(j)  * CalcDensIncNb(i, j)  
         !print *, "i, dTdt ", i, ", ", dTdt(i)
       end do
       !print *, "rho cp",  pt%
       !dTdt(i) = dTdt(i)/(pt%rho(i)*pt%cp_t(i))
       !print *, "dTdt(i)", dTdt(i)
     end do
-    !!$omp end parallel do      
+    !$omp end parallel do      
   end subroutine CalcDensIncPart
   
   
   
   subroutine CalcStressStrain (dt) 
   use Domain
+  use Functions
 	!Pressure = EOS(PresEq, Cs, P0,Density, RefDensity)
 
 	!!!!Jaumann rate terms
@@ -261,11 +260,17 @@ contains
   integer :: i
   real(fp_kind) ,intent(in):: dt
   
+  real(fp_kind) :: p00
+  
+  p00 = 0.
+  
   ident = 0.
   ident (1,1) = 1; ident (2,2) = 1.0; ident (3,3) = .1
   
   !$omp parallel do num_threads(Nproc) private (RotationRateT, Stress, SRT, RS)
   do i = 1, part_count
+    !pt%pressure(i) = EOS(PresEq, Cs, P0,Density, RefDensity)
+    pt%pressure(i) = EOS(0, pt%cs(i), p00,pt%rho(i), pt%rho_0(i))
     RotationRateT = transpose (pt%rot_rate(i,:,:))
     SRT = MatMul(pt%shear_stress(i,:,:),RotationRateT)
     RS  = MatMul(pt%rot_rate(i,:,:), pt%shear_stress(i,:,:))

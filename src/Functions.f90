@@ -29,6 +29,8 @@ module Functions
   end function SoundSpeed
 
 	real(fp_kind) function EOS(EQ, Cs0, P00, Density, Density0)
+    integer, intent (in) :: EQ
+    real(fp_kind), intent(in) :: Cs0, P00, Density, Density0
 		! switch (EQ)
 			! case 0:
 				EOS =  P00+(Cs0*Cs0)*(Density-Density0)
