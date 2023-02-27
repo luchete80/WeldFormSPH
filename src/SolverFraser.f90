@@ -32,10 +32,11 @@ subroutine SolveDiffUpdateFraser (tf, dt)
  
   
   time = 0.
-  do while (time <= tf)
+  do while (time < tf)
     call CalcDensIncPart
+      print *, "dens ",  pt%rho(1)
     ! do i = 1, part_count
-    ! !print *, "acc ",  pt%rho(i)
+      ! print *, "dens ",  pt%rho(i)
     ! end do
     
     call CalcRateTensorsPart
@@ -75,6 +76,8 @@ subroutine SolveDiffUpdateFraser (tf, dt)
         pt%v(i,3) = -0.48
       end if
     end do    
+
+      print *, "dens ",  pt%rho(1)
     
     time = time + dt
   end do 

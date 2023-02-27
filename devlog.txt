@@ -16,3 +16,5 @@
 20230224 - Added pressure to Stress Strain Calcs
          - Added corrected time calc functions
          - Added particle tag (id) 
+         - Fixed Stress Rate Calculation 
+         - Working on fraser solver
