@@ -29,20 +29,28 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   call MainNeighbourSearch()
   call InitRedArraysOnce()
   call CalcPairPosList()
+ 
   
-  ! do while (tf <= 100.0*dt)
+  time = 0.
+  do while (time <= tf)
     call CalcDensIncPart
-    ! call CalcRateTensorsPart
-    ! call CalcStressStrain(dt)
-    ! call CalcAccelPart
-    
-    ! !$omp parallel do num_threads(Nproc) private (du)
     ! do i = 1, part_count
-    ! du = pt%v(i,:) * dt * + 0.5 * pt%a(i,:) * dt * dt 
-    ! pt%x(i,:)     = pt%x(i,:)   + du
-    ! pt%disp(i,:)  = pt%disp(i,:) + du
+    ! !print *, "acc ",  pt%rho(i)
     ! end do
-    ! !$omp end parallel do  
+    
+    call CalcRateTensorsPart
+    call CalcStressStrain(dt)
+    call CalcAccelPart
+    ! !REINFORCE bc vel
+    
+    !$omp parallel do num_threads(Nproc) private (du)
+    do i = 1, part_count
+    !print *, "acc ",  pt%a(i,1), ", ",  pt%a(i,2), ", ", pt%a(i,3)
+    du = pt%v(i,:) * dt * + 0.5 * pt%a(i,:) * dt * dt 
+    pt%x(i,:)     = pt%x(i,:)   + du
+    pt%disp(i,:)  = pt%disp(i,:) + du
+    end do
+    !$omp end parallel do  
 
     ! !$omp parallel do num_threads(Nproc)  
     ! do i = 1, part_count
@@ -50,7 +58,10 @@ subroutine SolveDiffUpdateFraser (tf, dt)
     ! end do
     ! !$omp end parallel do  
 
-  ! end do 
+    ! !REINFORCE bc vel again
+    
+    time = time + dt
+  end do 
   
 
 end subroutine SolveDiffUpdateFraser

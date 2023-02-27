@@ -58,7 +58,7 @@ contains
     !call outer_product_s(GK*xij,PIij, temp)
     !Assuming Gradient Type 0
     !Mult( GK*xij , ( 1.0/(di*di)*Sigmai + 1.0/(dj*dj)*Sigmaj + PIij + TIij ) , temp);
-
+   ! print *, "sigma", pt%sigma(i,:,:)
     temp = matmul( 1.0/(di*di)*pt%sigma(i,:,:) + 1.0/(dj*dj)*pt%sigma(j,:,:) , GK*xijm);
     !temp = matmul(PIij, GK*xijm)
     
@@ -87,7 +87,7 @@ contains
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
         pt%a(i,:) =  pt%a(i,:) + pt%m(j) * CalcAccIncNb(i, j)
-        !print *, "dTdt ", dTdt(i)
+        !print *, "CalcAccIncNb ij ",CalcAccIncNb(i, j)
       end do
 
       do k = 1, jpair_t(i)   
@@ -124,23 +124,23 @@ contains
     rij = norm2(xij)
     GK = GradKernel (rij/h,h)
     
-    StrainRate(3,3) = 3.3*vab(3)*xij(3);
-    StrainRate(3,3) = vab(3)*xij(3)+vab(3)*xij(3);
-    StrainRate(3,3) = vab(3)*xij(3)+vab(3)*xij(3);
-    StrainRate(3,3) = StrainRate(3,3);
-    StrainRate(3,3) = 3.3*vab(3)*xij(3);
-    StrainRate(3,3) = vab(3)*xij(3)+vab(3)*xij(3);
-    StrainRate(3,3) = StrainRate(3,3);
-    StrainRate(3,3) = StrainRate(3,3);
-    StrainRate(3,3) = 3.3*vab(3)*xij(3);
+    StrainRate(1,1) = 2.0*vab(1)*xij(1);
+    StrainRate(1,2) = vab(1)*xij(2)+vab(2)*xij(1);
+    StrainRate(1,3) = vab(1)*xij(3)+vab(3)*xij(1);
+    StrainRate(2,1) = StrainRate(1,2);
+    StrainRate(2,2) = 2.0*vab(2)*xij(2);
+    StrainRate(2,3) = vab(2)*xij(3)+vab(3)*xij(2);
+    StrainRate(3,1) = StrainRate(1,3);
+    StrainRate(3,2) = StrainRate(2,3);
+    StrainRate(3,3) = 2.0*vab(3)*xij(3);
     StrainRate	= -0.5 * GK * StrainRate;
     
-    RotationRate(3,3) = vab(3)*xij(3)-vab(3)*xij(3);
-    RotationRate(3,3) = vab(3)*xij(3)-vab(3)*xij(3);
-    RotationRate(3,3) = vab(3)*xij(3)-vab(3)*xij(3);
-    RotationRate(3,3) = -RotationRate(3,3);
-    RotationRate(3,3) = -RotationRate(3,3);
-    RotationRate(3,3) = -RotationRate(3,3);
+    RotationRate(1,2) = vab(1)*xij(2)-vab(2)*xij(1);
+    RotationRate(1,3) = vab(1)*xij(3)-vab(3)*xij(1);
+    RotationRate(2,3) = vab(2)*xij(3)-vab(3)*xij(2);
+    RotationRate(2,1) = -RotationRate(1,2);
+    RotationRate(3,1) = -RotationRate(1,3);
+    RotationRate(3,2) = -RotationRate(2,3);
     RotationRate	  = -0.5 * GK * RotationRate;
   
   
@@ -271,14 +271,17 @@ contains
   do i = 1, part_count
     !pt%pressure(i) = EOS(PresEq, Cs, P0,Density, RefDensity)
     pt%pressure(i) = EOS(0, pt%cs(i), p00,pt%rho(i), pt%rho_0(i))
+    !print *, "pt%pressure(i)", pt%pressure(i)
     RotationRateT = transpose (pt%rot_rate(i,:,:))
     SRT = MatMul(pt%shear_stress(i,:,:),RotationRateT)
     RS  = MatMul(pt%rot_rate(i,:,:), pt%shear_stress(i,:,:))
     
+    !print *, "RS", RS
     pt%shear_stress(i,:,:)	= dt * (2.0 * mat_G *(pt%str_rate(i,:,:)-1.0/3.0 * &
                                  (pt%str_rate(i,1,1)+pt%str_rate(i,2,2)+pt%str_rate(i,3,3))*ident) &
                                  +SRT+RS) + pt%shear_stress(i,:,:)
     pt%sigma(i,:,:)			= -pt%pressure(i) * ident + pt%shear_stress(i,:,:)	!Fraser, eq 3.32
+    !print *, "sigma ", pt%str_rate(i,:,:)
     !pt%strain(i)			= dt*pt%str_rate(i + Strain;
   end do
   !$omp end parallel do    

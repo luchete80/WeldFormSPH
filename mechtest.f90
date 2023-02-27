@@ -41,19 +41,29 @@ implicit none
   Ly = 0.024
   Lz = 0.012	  
   
-  call AddBoxLength(0, V, Lx, Ly, Lz, r, rho, h)
+  call AddBoxLength(0, V, Lx + Lx/20., Ly, Lz, r, rho, h)
   
   pt%cs(:)  = sqrt(K_i/rho)
+  
+  !Boundary zones
+  do i=1,part_count
+    if (pt%x(i,1) < Lx/40.) then
+      pt%id(i) = 2
+    end if
+    if (pt%x(i,1) > Lx+Lx/40.) then
+      pt%id(i) = 3
+    end if
+  end do
 
   dt = 1.e-4
-  t = 0.01
+  t = 2.0e-4
   call SolveDiffUpdateFraser(t,dt)
   
   open (1,file='test.csv')!, position='APPEND')  
-  write (1,*) "X, Y, Z, temp"
+  write (1,*) "X, Y, Z, id, rho"
 
   do i=1,part_count  
-    write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%t(i) 
+    write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%id(i), ", ", pt%rho(i)
   end do
   close(1)
   

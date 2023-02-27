@@ -10,6 +10,7 @@ type(Particle)::pt
 real(fp_kind), dimension(3):: dommax, dommin
 
 real(fp_kind)::mat_G, mat_E!TODO: change to material
+real(fp_kind):: time
 
 contains 
   subroutine DomInit(proc)
@@ -24,10 +25,13 @@ contains
     integer, intent(in):: pt_count
     
     part_count = pt_count
+    !!!GENERAL 
     allocate (pt%x(part_count,3))
     allocate (pt%rho(part_count))
     allocate (pt%h(part_count))
     allocate (pt%m(part_count))
+    allocate (pt%id(part_count))
+    
     !! THERMAL
     allocate (pt%cp_t(part_count))
     allocate (pt%t(part_count))
@@ -109,6 +113,8 @@ contains
     pt%rho(:)   = Density
     pt%rho_0(:) = Density
     print *, "Particle mass ", pt%m(2)
+    
+    pt%id(:) = tag
     
     
   end subroutine AddBoxLength
@@ -227,6 +233,7 @@ contains
     print *, "Particle mass ", pt%m(1)
     
     pt%h(:) = h
+    pt%id(:) = tag
     
   end subroutine AddCylinderLength
 
