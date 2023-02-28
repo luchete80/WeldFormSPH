@@ -37,7 +37,8 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   time = 0.
   do while (time < tf)
     call CalcDensIncPart
-      print *, "dens ",  pt%rho(1)
+      print *, "dens 52",  pt%rho(52)
+      print *, "dens 674",  pt%rho(674)
     ! do i = 1, part_count
       ! print *, "dens ",  pt%rho(i)
     ! end do
