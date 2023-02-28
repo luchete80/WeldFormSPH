@@ -30,7 +30,7 @@ implicit none
   r = dx/2.
 
   e = 70.e9
-  nu = 0.3
+  nu = 0.33
   
   k_i= E / ( 3.*(1.-2*nu) );
   g_i= E / (2.* (1.+nu));  
@@ -56,7 +56,7 @@ implicit none
   end do
 
   dt = 0.4 * h / pt%cs(1)
-  print *, "Time step: ", dt
+  print *, "h ", h, "Cs ", pt%cs(1), "Time step: ", dt
   
   !t = 1.0e-4
   t = 2*dt

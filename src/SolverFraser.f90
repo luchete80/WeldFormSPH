@@ -15,7 +15,10 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   real(fp_kind),intent(in)::tf, dt
  
   real(fp_kind),dimension(3)::du
-  integer :: i
+  
+  real(fp_kind),dimension(3)::dumax
+  
+  integer :: i, j
 
   call omp_set_num_threads(12); 
   call DomInit(12)
@@ -41,6 +44,9 @@ subroutine SolveDiffUpdateFraser (tf, dt)
     
     call CalcRateTensorsPart
     call CalcStressStrain(dt)
+
+    print *, "Sigma 1298 " , pt%sigma(1298,:,:)
+    
     call CalcAccelPart
     ! !REINFORCE bc vel
     do i=1,part_count
@@ -70,9 +76,10 @@ subroutine SolveDiffUpdateFraser (tf, dt)
       if (pt%id(i) == 2 ) then
         pt%v(i,:) = 0.
       end if
-      if (pt%id(i) == 2) then
+      if (pt%id(i) == 3) then
+        !print *, "id ", i 
         pt%v(i,1) = 0.
-        pt%v(i,1) = 0.
+        pt%v(i,2) = 0.
         pt%v(i,3) = -0.48
       end if
     end do    
@@ -82,7 +89,16 @@ subroutine SolveDiffUpdateFraser (tf, dt)
     time = time + dt
   end do 
   
-
+  dumax = 0.0
+  do i=1,part_count  
+    do j=1,3
+      if (abs(pt%disp(i,j)) > dumax(j) ) then
+        dumax(j) = pt%disp(i,j)
+      end if
+    end do
+  end do 
+  print *, "Max Displacements ", dumax
+  
 end subroutine SolveDiffUpdateFraser
 
 end module Solver

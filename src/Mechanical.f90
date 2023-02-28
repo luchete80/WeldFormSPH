@@ -83,11 +83,17 @@ contains
     
    !$omp parallel do num_threads(Nproc) private (i,j,k) 
    !schedule (static)
+
+   
     do i = 1, part_count
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
         pt%a(i,:) =  pt%a(i,:) + pt%m(j) * CalcAccIncNb(i, j)
-        !print *, "CalcAccIncNb ij ",CalcAccIncNb(i, j)
+        !if (i ==51) then 
+        !print *, "part 51 position ", pt%x(52,:)
+        !print *, "j " , j, "CalcAccIncNb ij ",CalcAccIncNb(i, j)
+        !print *, "sigma j: ", j, ", " , pt%sigma(j,:,:) 
+        !end if
       end do
 
       do k = 1, jpair_t(i)   
@@ -135,6 +141,7 @@ contains
     StrainRate(3,3) = 2.0*vab(3)*xij(3);
     StrainRate	= -0.5 * GK * StrainRate;
     
+    RotationRate(1,1) = 0.0;     RotationRate(2,2) = 0.0;     RotationRate(3,3) = 0.0;
     RotationRate(1,2) = vab(1)*xij(2)-vab(2)*xij(1);
     RotationRate(1,3) = vab(1)*xij(3)-vab(3)*xij(1);
     RotationRate(2,3) = vab(2)*xij(3)-vab(3)*xij(2);
@@ -171,6 +178,9 @@ contains
         mj_dj = pt%m(j)/pt%rho(j)
         pt%str_rate(i,:,:) =  pt%str_rate(i,:,:) + mj_dj * str_rate_int(:,:)
         pt%rot_rate(i,:,:) =  pt%rot_rate(i,:,:) + mj_dj * rot_rate_int(:,:)
+        ! if (i==1) then
+        ! print *, "nb k ", k, "j particle ", j, "rot_rate inc",  rot_rate_int(:,:)
+        ! end if
         !print *, "dTdt ", dTdt(i)
       end do
 
@@ -203,8 +213,12 @@ contains
     vij(:) = pt%v(i,:) - pt%v(j,:)
     h = 0.5 * (pt%h(i) + pt%h(j))
     
-    rij = norm2(xij)
+    rij = norm2(xij) 
     GK = GradKernel (rij/h,h)
+    !if (i==52) then
+    !print *, "GK ", GK
+    !print *, "rij ", rij
+    !end if 
     CalcDensIncNb = dot_product(vij,GK*xij)
     
   end function CalcDensIncNb
@@ -222,18 +236,26 @@ contains
     !dTdt (:) = 0.
     
    write (*,*) "ipair_t(i)   ", ipair_t(i)   
+   print *, "Time ", time
    !$omp parallel do num_threads(Nproc) private (i,j,k) 
    !schedule (static)
     do i = 1, part_count
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
-        pt%rho(i) =  pt%rho(i) + pt%rho(i)/pt%rho(j) * CalcDensIncNb(i, j)
+        if (i==52) then
+        print *," j ", j, "densij ",CalcDensIncNb(i,j)
+        print *, "vab ", pt%v(i,:) - pt%v(j,:)
+        end if
+        pt%rho(i) =  pt%rho(i) + pt%m(j)/pt%rho(j) * CalcDensIncNb(i, j)
         !print *, "dTdt ", dTdt(i)
       end do
 
       do k = 1, jpair_t(i)   
         j = Anei_t(i,maxnbcount - k + 1)
-        pt%rho(i) = pt%rho(i) + pt%rho(i)/pt%rho(j)  * CalcDensIncNb(i, j)  
+        ! if (i==1) then
+        ! print *," j ", j
+        ! end if
+        pt%rho(i) = pt%rho(i) + pt%m(j)/pt%rho(j)  * CalcDensIncNb(i, j)  
         !print *, "i, dTdt ", i, ", ", dTdt(i)
       end do
       !print *, "rho cp",  pt%
@@ -271,7 +293,9 @@ contains
   do i = 1, part_count
     !pt%pressure(i) = EOS(PresEq, Cs, P0,Density, RefDensity)
     pt%pressure(i) = EOS(0, pt%cs(i), p00,pt%rho(i), pt%rho_0(i))
-    !print *, "pt%pressure(i)", pt%pressure(i)
+    if (i==52) then
+    !print *, "pt%pressure(i)", pt%pressure(i),", cs ", pt%cs(i), "p00", p00, ", rho", p00,pt%rho(i), ", rho 0", p00,pt%rho_0(i)
+    end if
     RotationRateT = transpose (pt%rot_rate(i,:,:))
     SRT = MatMul(pt%shear_stress(i,:,:),RotationRateT)
     RS  = MatMul(pt%rot_rate(i,:,:), pt%shear_stress(i,:,:))
@@ -281,11 +305,15 @@ contains
                                  (pt%str_rate(i,1,1)+pt%str_rate(i,2,2)+pt%str_rate(i,3,3))*ident) &
                                  +SRT+RS) + pt%shear_stress(i,:,:)
     pt%sigma(i,:,:)			= -pt%pressure(i) * ident + pt%shear_stress(i,:,:)	!Fraser, eq 3.32
-    !print *, "sigma ", pt%str_rate(i,:,:)
+    !print *, "particle ", i, ", rot_rate ", pt%rot_rate(i,:,:)
     !pt%strain(i)			= dt*pt%str_rate(i + Strain;
   end do
   !$omp end parallel do    
-	!double dep = 0.;
+	  !print *, "str_rate ", pt%str_rate(1,:,:)
+	  !print *, "shear_stress ", pt%shear_stress(1,:,:)
+    print *, "pressure ",pt%pressure(52)
+	  print *, "sigma ", pt%sigma(52,:,:)
+  !double dep = 0.;
   !double sig_trial = 0.;
 
 	!ShearStress	= dt*(2.0*G*(StrainRate-1.0/3.0*(StrainRate(0,0)+StrainRate(1,1)+StrainRate(2,2))*OrthoSys::I)+SRT+RS) + ShearStress;

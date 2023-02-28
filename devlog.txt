@@ -16,5 +16,8 @@
 20230224 - Added pressure to Stress Strain Calcs
          - Added corrected time calc functions
          - Added particle tag (id) 
-         - Fixed Stress Rate Calculation 
+20230227 - Fixed Stress Rate Calculation 
          - Working on fraser solver
+20230228 - Fixed Rotation rate (added diagonal null values)
+         - Fixed cantilever example boundary conditions
+         - Fixed density increment calculation
