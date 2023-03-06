@@ -36,6 +36,7 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   
   time = 0.
   do while (time < tf)
+    call StartVars !Similar to start acceleration in weldform
     call CalcDensIncPart
       print *, "dens 52",  pt%rho(52)
       print *, "dens 674",  pt%rho(674)
@@ -44,11 +45,13 @@ subroutine SolveDiffUpdateFraser (tf, dt)
     ! end do
     
     call CalcRateTensorsPart
+    print *, "str rate 52",  pt%str_rate(52,:,:)
     call CalcStressStrain(dt)
 
-    print *, "Sigma 1298 " , pt%sigma(1298,:,:)
+    print *, "Sigma 103 " , pt%sigma(1298,:,:)
     
     call CalcAccelPart
+    print *, "Accel 52" , pt%a(52,:)
     ! !REINFORCE bc vel
     do i=1,part_count
        if (pt%id(i) == 2 .or. pt%id(i) == 3) then

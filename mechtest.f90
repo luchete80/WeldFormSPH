@@ -63,11 +63,12 @@ implicit none
   call SolveDiffUpdateFraser(t,dt)
   
   open (1,file='test.csv')!, position='APPEND')  
-  write (1,*) "X, Y, Z, id, rho, Nb, Vx, Vy, Vz"
+  write (1,*) "X, Y, Z, id, rho, Nb, Vx, Vy, Vz, Ax, Ay, Az"
 
   do i=1,part_count  
     write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%id(i), ", ", pt%rho(i), ", ", ipair_t(i)+jpair_t(i), ", " ,&
-                &pt%v(i,1), ", ", pt%v(i,2), ", ", pt%v(i,3)
+                &pt%v(i,1), ", ", pt%v(i,2), ", ", pt%v(i,3), ", ",&
+                &pt%a(i,1), ", ", pt%a(i,2), ", ", pt%a(i,3)
   end do
   close(1)
   

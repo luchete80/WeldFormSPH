@@ -24,7 +24,13 @@ contains
     ! AB = spread(source = A, dim = 2, ncopies = 3) * &
          ! spread(source = B, dim = 1, ncopies = 3)
   ! end subroutine outer_product_s
-
+  
+  subroutine StartVars ()
+    use Domain
+    pt%a(:,:) = 0.
+    !pt%rho(:,:)
+  end subroutine StartVars
+  
   function CalcAccIncNb(i, j)
     use omp_lib
     use Domain
@@ -89,11 +95,11 @@ contains
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
         pt%a(i,:) =  pt%a(i,:) + pt%m(j) * CalcAccIncNb(i, j)
-        !if (i ==51) then 
+        if (i ==51) then 
         !print *, "part 51 position ", pt%x(52,:)
         !print *, "j " , j, "CalcAccIncNb ij ",CalcAccIncNb(i, j)
         !print *, "sigma j: ", j, ", " , pt%sigma(j,:,:) 
-        !end if
+        end if
       end do
 
       do k = 1, jpair_t(i)   
@@ -163,14 +169,13 @@ contains
     !real(fp_kind), intent(out)::dTdt(part_count)
     real(fp_kind) :: str_rate_int(3,3),rot_rate_int(3,3), mj_dj
     integer :: i, j, k
-    
+    real(fp_kind) :: GK, xij(3), vab(3),h, rij
     !dTdt (:) = 0.
     
    !$omp parallel do num_threads(Nproc) private (i,j,k) 
-   !schedule (static)
     do i = 1, part_count
-      pt%str_rate(i,:,:) = 0
-      pt%rot_rate(i,:,:) = 0
+      pt%str_rate(i,:,:) = 0.0
+      pt%rot_rate(i,:,:) = 0.0
       
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
@@ -178,10 +183,15 @@ contains
         mj_dj = pt%m(j)/pt%rho(j)
         pt%str_rate(i,:,:) =  pt%str_rate(i,:,:) + mj_dj * str_rate_int(:,:)
         pt%rot_rate(i,:,:) =  pt%rot_rate(i,:,:) + mj_dj * rot_rate_int(:,:)
-        ! if (i==1) then
-        ! print *, "nb k ", k, "j particle ", j, "rot_rate inc",  rot_rate_int(:,:)
-        ! end if
-        !print *, "dTdt ", dTdt(i)
+        if (i==52) then
+            xij(:) = pt%x(i,:) - pt%x(j,:)
+
+            h = 0.5 * (pt%h(i) + pt%h(j))
+            
+            rij = norm2(xij)
+            GK = GradKernel (rij/h,h)
+        print *, "nb k ", k, ", GK ", GK, "j particle ", j, "rot_rate inc",  rot_rate_int(:,:)
+        end if
       end do
 
       do k = 1, jpair_t(i)   
@@ -215,10 +225,10 @@ contains
     
     rij = norm2(xij) 
     GK = GradKernel (rij/h,h)
-    !if (i==52) then
-    !print *, "GK ", GK
-    !print *, "rij ", rij
-    !end if 
+    ! if (i==52 .and. j==675) then
+    ! print *, "GK ", GK
+    ! print *, "rij ", rij
+    ! end if 
     CalcDensIncNb = dot_product(vij,GK*xij)
     
   end function CalcDensIncNb
@@ -243,7 +253,7 @@ contains
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
         if (i==52) then
-        print *," j ", j, "densij ",CalcDensIncNb(i,j)
+       ! print *," j ", j, "densij ",CalcDensIncNb(i,j)
         !print *, "vab ", pt%v(i,:) - pt%v(j,:)
         end if
         pt%rho(i) =  pt%rho(i) + pt%m(j)/pt%rho(j) * CalcDensIncNb(i, j)

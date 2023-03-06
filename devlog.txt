@@ -21,3 +21,6 @@
 20230228 - Fixed Rotation rate (added diagonal null values)
          - Fixed cantilever example boundary conditions
          - Fixed density increment calculation
+------------------------------------------------------------------------
+20230306 - Fixed error in acceleration not set to zero in every time step
+         - Added nb, velocity and accel output
