@@ -80,8 +80,8 @@ subroutine SolveDiffUpdateFraser (tf, dt)
       if (pt%id(i) == 3) then
         !print *, "id ", i 
         pt%v(i,1) = 0.
-        pt%v(i,2) = 0.
-        pt%v(i,3) = -0.48
+        pt%v(i,2) = -0.48
+        pt%v(i,3) = 0.
       end if
     end do    
 

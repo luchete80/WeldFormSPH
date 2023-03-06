@@ -244,7 +244,7 @@ contains
         j = Anei_t(i,k)
         if (i==52) then
         print *," j ", j, "densij ",CalcDensIncNb(i,j)
-        print *, "vab ", pt%v(i,:) - pt%v(j,:)
+        !print *, "vab ", pt%v(i,:) - pt%v(j,:)
         end if
         pt%rho(i) =  pt%rho(i) + pt%m(j)/pt%rho(j) * CalcDensIncNb(i, j)
         !print *, "dTdt ", dTdt(i)
