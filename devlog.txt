@@ -24,3 +24,4 @@
 ------------------------------------------------------------------------
 20230306 - Fixed error in acceleration not set to zero in every time step
          - Added nb, velocity and accel output
+         - Found error in strain and rot rate increment, mj/rhojj was not calculated

@@ -185,18 +185,19 @@ contains
         pt%rot_rate(i,:,:) =  pt%rot_rate(i,:,:) + mj_dj * rot_rate_int(:,:)
         if (i==52) then
             xij(:) = pt%x(i,:) - pt%x(j,:)
-
+            vab(:) = pt%v(i,:) - pt%v(j,:)
             h = 0.5 * (pt%h(i) + pt%h(j))
             
             rij = norm2(xij)
             GK = GradKernel (rij/h,h)
-        print *, "nb k ", k, ", GK ", GK, "j particle ", j, "rot_rate inc",  rot_rate_int(:,:)
+        print *, "nb k ", k, ", GK ", GK, "j particle ", j, "str_rate inc",  str_rate_int(:,:), ",vab ", vab, ", mjdj" ,mj_dj
         end if
       end do
 
       do k = 1, jpair_t(i)   
         j = Anei_t(i,maxnbcount - k + 1)
         call CalcRateTensorsNb(i, j,str_rate_int, rot_rate_int)
+        mj_dj = pt%m(j)/pt%rho(j)
         pt%str_rate(i,:,:) =  pt%str_rate(i,:,:) + mj_dj * str_rate_int(:,:)
         pt%rot_rate(i,:,:) =  pt%rot_rate(i,:,:) + mj_dj * rot_rate_int(:,:)
         !print *, "i, dTdt ", i, ", ", dTdt(i)
