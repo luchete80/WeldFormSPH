@@ -29,8 +29,8 @@ implicit none
   h	= dx*1.2 
   r = dx/2.
 
-  e = 70.e9
-  nu = 0.33
+  e = 70.0e9
+  nu = 0.330
   
   k_i= E / ( 3.*(1.-2*nu) );
   g_i= E / (2.* (1.+nu));  

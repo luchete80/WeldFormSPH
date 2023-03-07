@@ -25,3 +25,5 @@
 20230306 - Fixed error in acceleration not set to zero in every time step
          - Added nb, velocity and accel output
          - Found error in strain and rot rate increment, mj/rhojj was not calculated
+         - Corrected critical error in density correction (it was updated rho directly in drhodt calculation)
+         - Corrected critical error in BC application in solver before density calculation

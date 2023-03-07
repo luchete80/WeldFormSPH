@@ -37,6 +37,19 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   time = 0.
   do while (time < tf)
     call StartVars !Similar to start acceleration in weldform
+    !APPLY BC!
+    do i=1,part_count
+      if (pt%id(i) == 2 ) then
+        pt%v(i,:) = 0.0
+      end if
+      if (pt%id(i) == 3) then
+        !print *, "id ", i 
+        pt%v(i,1) = 0.0
+        pt%v(i,2) = -0.48
+        pt%v(i,3) = 0.0
+      end if
+    end do 
+    
     call CalcDensIncPart
     !$omp parallel do num_threads(Nproc) private (du)
     do i = 1, part_count

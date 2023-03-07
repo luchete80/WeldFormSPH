@@ -27,8 +27,8 @@ contains
   
   subroutine StartVars ()
     use Domain
-    pt%a(:,:) = 0.
-    pt%drhodt(:) = 0.
+    pt%a(:,:) = 0.0
+    pt%drhodt(:) = 0.0
     !pt%rho(:,:)
   end subroutine StartVars
   
@@ -219,7 +219,7 @@ contains
     
     implicit none
     real(fp_kind) :: GK, k, xij(3), h, rij, vij(3)
-    integer,intent(in) :: i, j 
+    integer,intent(in) :: i, j   
     
     xij(:) = pt%x(i,:) - pt%x(j,:)
     vij(:) = pt%v(i,:) - pt%v(j,:)
@@ -244,18 +244,29 @@ contains
     implicit none
     real(fp_kind) :: m
     integer :: i, j, k
-    
-    !dTdt (:) = 0.
+    !ONLY  FOR TESTING
+    real(fp_kind) :: GK, xij(3), vab(3),h, rij ,vij(3) 
+   
     
    write (*,*) "ipair_t(i)   ", ipair_t(i)   
    print *, "Time ", time
-   !$omp parallel do num_threads(Nproc) private (i,j,k) 
+   !!$omp parallel do num_threads(Nproc) private (i,j,k) 
    !schedule (static)
     do i = 1, part_count
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
-        if (i==52) then
+
+        ! xij(:) = pt%x(i,:) - pt%x(j,:)
+        ! vij(:) = pt%v(i,:) - pt%v(j,:)
+        ! h = 0.5 * (pt%h(i) + pt%h(j))
+        
+        ! rij = norm2(xij) 
+        ! GK = GradKernel (rij/h,h)
+        
+        !if (i==52 .and. j==675) then
+        if (i==52 ) then
         print *," j ", j, "densij ",CalcDensIncNb(i,j)
+        !print *,"xij vij K ", xij, ", ", vij, ", ", GK
         !print *, "vab ", pt%v(i,:) - pt%v(j,:)
         end if
         pt%drhodt(i) =  pt%drhodt(i) + pt%m(j)/pt%rho(j) * CalcDensIncNb(i, j)
@@ -274,7 +285,7 @@ contains
       !dTdt(i) = dTdt(i)/(pt%rho(i)*pt%cp_t(i))
       !print *, "dTdt(i)", dTdt(i)
     end do
-    !$omp end parallel do      
+    !!$omp end parallel do      
   end subroutine CalcDensIncPart
   
   
