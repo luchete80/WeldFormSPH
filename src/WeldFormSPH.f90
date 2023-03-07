@@ -32,7 +32,7 @@ implicit none
   maxt = omp_get_max_threads()
   write( *, * ) 'Max threads ', maxt
   
-  dx    = 0.03
+  dx    = 0.02
   Rxy  = 0.15
   Lz = 0.56
   r = dx / 2.0
@@ -83,7 +83,7 @@ implicit none
   nn=(L/dx)*(L/dx)
     pt%t(1:nn) = 500.
   !!! FASTEST ALGORITHM
-  do while (t_ <= 100.0*deltat)
+  do while (t_ <= 1000.0*deltat)
 
     call CalcTempIncPart(dTdt) !THIS IS THE FASTEST BY NOW
     !print *, "dTdt 0",  dTdt(1)

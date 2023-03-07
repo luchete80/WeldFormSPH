@@ -28,6 +28,7 @@ contains
     !!!GENERAL 
     allocate (pt%x(part_count,3))
     allocate (pt%rho(part_count))
+    allocate (pt%drhodt(part_count))
     allocate (pt%h(part_count))
     allocate (pt%m(part_count))
     allocate (pt%id(part_count))

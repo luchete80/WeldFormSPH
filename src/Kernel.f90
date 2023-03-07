@@ -2,7 +2,7 @@ module Kernels
 
 use ModPrecision, only : fp_kind
 
-real(fp_kind), parameter :: m_pi = 3.1415926
+real(fp_kind), parameter :: m_pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406
 contains
 
   real(fp_kind) function Kernel(q, h)

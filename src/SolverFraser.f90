@@ -38,11 +38,17 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   do while (time < tf)
     call StartVars !Similar to start acceleration in weldform
     call CalcDensIncPart
-      print *, "dens 52",  pt%rho(52)
-      print *, "dens 674",  pt%rho(674)
-    ! do i = 1, part_count
-      ! print *, "dens ",  pt%rho(i)
-    ! end do
+    !$omp parallel do num_threads(Nproc) private (du)
+    do i = 1, part_count
+      pt%rho(i) = pt%rho(i) + pt%drhodt(i) * dt
+    end do
+    !$omp end parallel do  
+    
+    print *, "dens 52",  pt%rho(52)
+    !print *, "dens 674",  pt%rho(674)
+  ! do i = 1, part_count
+    ! print *, "dens ",  pt%rho(i)
+  ! end do
     
     call CalcRateTensorsPart
     print *, "str rate 52",  pt%str_rate(52,:,:)

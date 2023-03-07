@@ -17,7 +17,7 @@ Type Particle
   Integer, Dimension(:), Allocatable :: ID
   real(fp_kind), dimension(:,:), Allocatable :: x
   !GENERAL
-  real(fp_kind), dimension(:), Allocatable :: h, t, cs, rho, m, rho_0 !influence radius, temp
+  real(fp_kind), dimension(:), Allocatable :: h, t, cs, rho, m, rho_0, drhodt !influence radius, temp
 
   !THERMAL
   real(fp_kind), dimension(:), allocatable :: cp_t, k_t

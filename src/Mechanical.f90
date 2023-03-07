@@ -28,6 +28,7 @@ contains
   subroutine StartVars ()
     use Domain
     pt%a(:,:) = 0.
+    pt%drhodt(:) = 0.
     !pt%rho(:,:)
   end subroutine StartVars
   
@@ -169,7 +170,7 @@ contains
     !real(fp_kind), intent(out)::dTdt(part_count)
     real(fp_kind) :: str_rate_int(3,3),rot_rate_int(3,3), mj_dj
     integer :: i, j, k
-    real(fp_kind) :: GK, xij(3), vab(3),h, rij
+    !real(fp_kind) :: GK, xij(3), vab(3),h, rij
     !dTdt (:) = 0.
     
    !$omp parallel do num_threads(Nproc) private (i,j,k) 
@@ -183,15 +184,15 @@ contains
         mj_dj = pt%m(j)/pt%rho(j)
         pt%str_rate(i,:,:) =  pt%str_rate(i,:,:) + mj_dj * str_rate_int(:,:)
         pt%rot_rate(i,:,:) =  pt%rot_rate(i,:,:) + mj_dj * rot_rate_int(:,:)
-        if (i==52) then
-            xij(:) = pt%x(i,:) - pt%x(j,:)
-            vab(:) = pt%v(i,:) - pt%v(j,:)
-            h = 0.5 * (pt%h(i) + pt%h(j))
+        ! if (i==52) then
+            ! xij(:) = pt%x(i,:) - pt%x(j,:)
+            ! vab(:) = pt%v(i,:) - pt%v(j,:)
+            ! h = 0.5 * (pt%h(i) + pt%h(j))
             
-            rij = norm2(xij)
-            GK = GradKernel (rij/h,h)
-        print *, "nb k ", k, ", GK ", GK, "j particle ", j, "str_rate inc",  str_rate_int(:,:), ",vab ", vab, ", mjdj" ,mj_dj
-        end if
+            ! rij = norm2(xij)
+            ! GK = GradKernel (rij/h,h)
+        ! print *, "nb k ", k, ", GK ", GK, "j particle ", j, "str_rate inc",  str_rate_int(:,:), ",vab ", vab, ", mjdj" ,mj_dj
+        !end if
       end do
 
       do k = 1, jpair_t(i)   
@@ -254,10 +255,10 @@ contains
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
         if (i==52) then
-       ! print *," j ", j, "densij ",CalcDensIncNb(i,j)
+        print *," j ", j, "densij ",CalcDensIncNb(i,j)
         !print *, "vab ", pt%v(i,:) - pt%v(j,:)
         end if
-        pt%rho(i) =  pt%rho(i) + pt%m(j)/pt%rho(j) * CalcDensIncNb(i, j)
+        pt%drhodt(i) =  pt%drhodt(i) + pt%m(j)/pt%rho(j) * CalcDensIncNb(i, j)
         !print *, "dTdt ", dTdt(i)
       end do
 
@@ -266,7 +267,7 @@ contains
         ! if (i==1) then
         ! print *," j ", j
         ! end if
-        pt%rho(i) = pt%rho(i) + pt%m(j)/pt%rho(j)  * CalcDensIncNb(i, j)  
+        pt%drhodt(i) = pt%drhodt(i) + pt%m(j)/pt%rho(j)  * CalcDensIncNb(i, j)  
         !print *, "i, dTdt ", i, ", ", dTdt(i)
       end do
       !print *, "rho cp",  pt%
@@ -303,6 +304,9 @@ contains
   !$omp parallel do num_threads(Nproc) private (RotationRateT, Stress, SRT, RS)
   do i = 1, part_count
     !pt%pressure(i) = EOS(PresEq, Cs, P0,Density, RefDensity)
+    if (i == 52) then
+    print *, "cs, p00, rho, rho_0 ", pt%cs(i), p00,pt%rho(i), pt%rho_0(i)
+    end if
     pt%pressure(i) = EOS(0, pt%cs(i), p00,pt%rho(i), pt%rho_0(i))
     if (i==52) then
     !print *, "pt%pressure(i)", pt%pressure(i),", cs ", pt%cs(i), "p00", p00, ", rho", p00,pt%rho(i), ", rho 0", p00,pt%rho_0(i)
