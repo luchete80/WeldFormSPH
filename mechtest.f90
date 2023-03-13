@@ -21,6 +21,8 @@ implicit none
   real(fp_kind)::rho
   integer :: i
   
+  nproc = 1
+  
   Lz = 0.56
   Rxy = 0.15
   
@@ -59,7 +61,7 @@ implicit none
   print *, "h ", h, "Cs ", pt%cs(1), "Time step: ", dt
   
   !t = 1.0e-4
-  t = 2.*dt
+  t = 10.*dt
   call SolveDiffUpdateFraser(t,dt)
   
   open (1,file='test.csv')!, position='APPEND')  

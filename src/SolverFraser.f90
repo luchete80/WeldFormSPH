@@ -51,13 +51,14 @@ subroutine SolveDiffUpdateFraser (tf, dt)
     end do 
     
     call CalcDensIncPart
-    !$omp parallel do num_threads(Nproc) private (du)
+    print *, "dt " , dt
+    !!$omp parallel do num_threads(Nproc) private (du)
     do i = 1, part_count
       pt%rho(i) = pt%rho(i) + pt%drhodt(i) * dt
     end do
-    !$omp end parallel do  
-    
-    print *, "dens 52",  pt%rho(52)
+    !!$omp end parallel do  
+    print *, "drhodt 52 ", pt%drhodt(52)
+    print *, "dens 52 ",  pt%rho(52)
     !print *, "dens 674",  pt%rho(674)
   ! do i = 1, part_count
     ! print *, "dens ",  pt%rho(i)

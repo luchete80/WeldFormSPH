@@ -250,9 +250,10 @@ contains
     
    write (*,*) "ipair_t(i)   ", ipair_t(i)   
    print *, "Time ", time
-   !!$omp parallel do num_threads(Nproc) private (i,j,k) 
+   !$omp parallel do num_threads(Nproc) private (i,j,k) 
    !schedule (static)
     do i = 1, part_count
+      pt% drhodt(i) = 0.0
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
 
@@ -265,7 +266,7 @@ contains
         
         !if (i==52 .and. j==675) then
         if (i==52 ) then
-        print *," j ", j, "densij ",CalcDensIncNb(i,j)
+        print *," j ", j, "densij mj/rhoj",CalcDensIncNb(i,j), pt%m(j)/pt%rho(j)
         !print *,"xij vij K ", xij, ", ", vij, ", ", GK
         !print *, "vab ", pt%v(i,:) - pt%v(j,:)
         end if
@@ -275,17 +276,21 @@ contains
 
       do k = 1, jpair_t(i)   
         j = Anei_t(i,maxnbcount - k + 1)
+        if (i==52 ) then
+        print *," j ", j, "densij ",CalcDensIncNb(i,j)
+        end if
         ! if (i==1) then
         ! print *," j ", j
         ! end if
         pt%drhodt(i) = pt%drhodt(i) + pt%m(j)/pt%rho(j)  * CalcDensIncNb(i, j)  
         !print *, "i, dTdt ", i, ", ", dTdt(i)
       end do
+      pt%drhodt(i) = pt%drhodt(i) * pt%rho(i)
       !print *, "rho cp",  pt%
       !dTdt(i) = dTdt(i)/(pt%rho(i)*pt%cp_t(i))
       !print *, "dTdt(i)", dTdt(i)
     end do
-    !!$omp end parallel do      
+    !$omp end parallel do      
   end subroutine CalcDensIncPart
   
   
