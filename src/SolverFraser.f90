@@ -55,7 +55,8 @@ subroutine SolveDiffUpdateFraser (tf, dt)
     print *, " vel 52 ", pt%v(52,:)
     call CalcDensIncPart
     print *, "dt " , dt
-    !!$omp parallel do num_threads(Nproc) private (du)
+    
+    !$omp parallel do num_threads(Nproc) private (du)
     do i = 1, part_count
       pt%rho(i) = pt%rho(i) + pt%drhodt(i) * dt
     end do
@@ -87,17 +88,13 @@ subroutine SolveDiffUpdateFraser (tf, dt)
 
     
         
-    !!$omp parallel do num_threads(Nproc) private (du)
+    !$omp parallel do num_threads(Nproc) private (du)
     do i = 1, part_count
       du = pt%v(i,:) * dt + 0.5 * pt%a(i,:) * dt * dt 
       pt%x(i,:)     = pt%x(i,:)   + du
       pt%disp(i,:)  = pt%disp(i,:) + du
-    if (i==51) then
-    print *, " du 52 ", du
-    print *, " a v id ", pt%a(i,:), " " , pt%v(i,:), " ", pt%id(52)
-    end if
     end do
-    !!$omp end parallel do  
+    !$omp end parallel do  
     
       print *, "disp 52", pt%disp(52,:) 
       
