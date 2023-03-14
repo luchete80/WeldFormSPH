@@ -263,8 +263,8 @@ contains
     real(fp_kind) :: GK, xij(3), vab(3),h, rij ,vij(3) 
    
     
-   write (*,*) "ipair_t(i)   ", ipair_t(i)   
-   print *, "Time ", time
+   !write (*,*) "ipair_t(i)   ", ipair_t(i)   
+   !print *, "Time ", time
    !$omp parallel do num_threads(Nproc) private (i,j,k) 
    !schedule (static)
     do i = 1, part_count

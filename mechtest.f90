@@ -23,7 +23,7 @@ implicit none
   
   
   
-  nproc = 1
+  nproc = 12
   
   Lz = 0.56
   Rxy = 0.15
