@@ -66,6 +66,7 @@ subroutine SolveDiffUpdateFraser (tf, dt)
     
     call CalcRateTensorsPart
     print *, "str rate 52",  pt%str_rate(52,:,:)
+    print *, "rot rate 52",  pt%rot_rate(52,:,:)
     call CalcStressStrain(dt)
 
     print *, "Sigma 103 " , pt%sigma(1298,:,:)

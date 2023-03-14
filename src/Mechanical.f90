@@ -137,6 +137,9 @@ contains
     rij = norm2(xij)
     GK = GradKernel (rij/h,h)
     
+
+    
+    
     StrainRate(1,1) = 2.0*vab(1)*xij(1);
     StrainRate(1,2) = vab(1)*xij(2)+vab(2)*xij(1);
     StrainRate(1,3) = vab(1)*xij(3)+vab(3)*xij(1);
@@ -147,6 +150,10 @@ contains
     StrainRate(3,2) = StrainRate(2,3);
     StrainRate(3,3) = 2.0*vab(3)*xij(3);
     StrainRate	= -0.5 * GK * StrainRate;
+
+    if (i==52 .and. j==674) then
+      print *, "vij ", vab(:), "GK, ", GK, "str 12 ", StrainRate(1,2), "xij 1 ", xij(1)
+    end if
     
     RotationRate(1,1) = 0.0;     RotationRate(2,2) = 0.0;     RotationRate(3,3) = 0.0;
     RotationRate(1,2) = vab(1)*xij(2)-vab(2)*xij(1);
@@ -170,10 +177,10 @@ contains
     !real(fp_kind), intent(out)::dTdt(part_count)
     real(fp_kind) :: str_rate_int(3,3),rot_rate_int(3,3), mj_dj
     integer :: i, j, k
-    !real(fp_kind) :: GK, xij(3), vab(3),h, rij
+    real(fp_kind) :: GK, xij(3), vab(3),h, rij
     !dTdt (:) = 0.
     
-   !$omp parallel do num_threads(Nproc) private (i,j,k) 
+   !!$omp parallel do num_threads(Nproc) private (i,j,k) 
     do i = 1, part_count
       pt%str_rate(i,:,:) = 0.0
       pt%rot_rate(i,:,:) = 0.0
@@ -184,15 +191,18 @@ contains
         mj_dj = pt%m(j)/pt%rho(j)
         pt%str_rate(i,:,:) =  pt%str_rate(i,:,:) + mj_dj * str_rate_int(:,:)
         pt%rot_rate(i,:,:) =  pt%rot_rate(i,:,:) + mj_dj * rot_rate_int(:,:)
-        ! if (i==52) then
+        if (i==52) then
             ! xij(:) = pt%x(i,:) - pt%x(j,:)
             ! vab(:) = pt%v(i,:) - pt%v(j,:)
             ! h = 0.5 * (pt%h(i) + pt%h(j))
             
             ! rij = norm2(xij)
             ! GK = GradKernel (rij/h,h)
-        ! print *, "nb k ", k, ", GK ", GK, "j particle ", j, "str_rate inc",  str_rate_int(:,:), ",vab ", vab, ", mjdj" ,mj_dj
-        !end if
+        ! if (j==674) then
+          ! print *, "nb k ", k, ", GK ", GK, "j particle ", j, "str_rate inc",  str_rate_int(:,:), ",vab ", vab, ", mjdj" ,mj_dj
+        ! endif
+        print *, "j  str rate inc ", j, str_rate_int(:,:)
+        end if
       end do
 
       do k = 1, jpair_t(i)   
@@ -207,7 +217,7 @@ contains
       !dTdt(i) = dTdt(i)/(pt%rho(i)*pt%cp_t(i))
       !print *, "dTdt(i)", dTdt(i)
     end do
-    !$omp end parallel do    
+    !!$omp end parallel do    
 
   end subroutine CalcRateTensorsPart
   
@@ -315,7 +325,7 @@ contains
   p00 = 0.
   
   ident = 0.
-  ident (1,1) = 1; ident (2,2) = 1.0; ident (3,3) = .1
+  ident (1,1) = 1.0; ident (2,2) = 1.0; ident (3,3) = 1.0
   
   !$omp parallel do num_threads(Nproc) private (RotationRateT, Stress, SRT, RS)
   do i = 1, part_count

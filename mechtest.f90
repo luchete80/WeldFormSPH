@@ -61,7 +61,7 @@ implicit none
   print *, "h ", h, "Cs ", pt%cs(1), "Time step: ", dt
   
   !t = 1.0e-4
-  t = 10.*dt
+  t = 2.*dt
   call SolveDiffUpdateFraser(t,dt)
   
   open (1,file='test.csv')!, position='APPEND')  
