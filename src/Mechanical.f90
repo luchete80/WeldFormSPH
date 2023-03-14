@@ -96,11 +96,11 @@ contains
       do k = 1, ipair_t(i)   
         j = Anei_t(i,k)
         pt%a(i,:) =  pt%a(i,:) + pt%m(j) * CalcAccIncNb(i, j)
-        if (i ==51) then 
+        !if (i ==51) then 
         !print *, "part 51 position ", pt%x(52,:)
         !print *, "j " , j, "CalcAccIncNb ij ",CalcAccIncNb(i, j)
         !print *, "sigma j: ", j, ", " , pt%sigma(j,:,:) 
-        end if
+        !end if
       end do
 
       do k = 1, jpair_t(i)   
@@ -128,6 +128,7 @@ contains
     integer,intent(in) :: i, j 
     
     real(fp_kind), intent(out)::StrainRate(3,3), RotationRate(3,3)
+    real(fp_kind) :: vx21
     
     vab(:) = pt%v(i,:) - pt%v(j,:)
     xij(:) = pt%x(i,:) - pt%x(j,:)
@@ -137,11 +138,11 @@ contains
     rij = norm2(xij)
     GK = GradKernel (rij/h,h)
     
-
-    
+   
+    vx21 = vab(2)*xij(1)
     
     StrainRate(1,1) = 2.0*vab(1)*xij(1);
-    StrainRate(1,2) = vab(1)*xij(2)+vab(2)*xij(1);
+    StrainRate(1,2) = vab(1)*xij(2)+vx21;
     StrainRate(1,3) = vab(1)*xij(3)+vab(3)*xij(1);
     StrainRate(2,1) = StrainRate(1,2);
     StrainRate(2,2) = 2.0*vab(2)*xij(2);
@@ -151,19 +152,23 @@ contains
     StrainRate(3,3) = 2.0*vab(3)*xij(3);
     StrainRate	= -0.5 * GK * StrainRate;
 
-    if (i==52 .and. j==674) then
-      print *, "vij ", vab(:), "GK, ", GK, "str 12 ", StrainRate(1,2), "xij 1 ", xij(1)
-    end if
+    ! if (i==52 .and. j==674) then
+      ! print *, "vij ", vab(:), "GK, ", GK, "str 12 ", StrainRate(1,2), "xij 1 ", xij(1)
+    ! end if
     
     RotationRate(1,1) = 0.0;     RotationRate(2,2) = 0.0;     RotationRate(3,3) = 0.0;
-    RotationRate(1,2) = vab(1)*xij(2)-vab(2)*xij(1);
+    
+    RotationRate(1,2) = vab(1)*xij(2)- vx21
     RotationRate(1,3) = vab(1)*xij(3)-vab(3)*xij(1);
     RotationRate(2,3) = vab(2)*xij(3)-vab(3)*xij(2);
     RotationRate(2,1) = -RotationRate(1,2);
     RotationRate(3,1) = -RotationRate(1,3);
     RotationRate(3,2) = -RotationRate(2,3);
     RotationRate	  = -0.5 * GK * RotationRate;
-  
+
+    ! if (i==52 .and. j==674) then
+      ! print *, "vij ", vab(:), "GK, ", GK, "rot 12 ", StrainRate(1,2), "xij 1 ", xij(1), " test ", -vab(2)*xij(1)*(-0.5)*GK
+    ! end if  
   
   end subroutine CalcRateTensorsNb
 
@@ -191,7 +196,7 @@ contains
         mj_dj = pt%m(j)/pt%rho(j)
         pt%str_rate(i,:,:) =  pt%str_rate(i,:,:) + mj_dj * str_rate_int(:,:)
         pt%rot_rate(i,:,:) =  pt%rot_rate(i,:,:) + mj_dj * rot_rate_int(:,:)
-        if (i==52) then
+        !if (i==52) then
             ! xij(:) = pt%x(i,:) - pt%x(j,:)
             ! vab(:) = pt%v(i,:) - pt%v(j,:)
             ! h = 0.5 * (pt%h(i) + pt%h(j))
@@ -201,8 +206,8 @@ contains
         ! if (j==674) then
           ! print *, "nb k ", k, ", GK ", GK, "j particle ", j, "str_rate inc",  str_rate_int(:,:), ",vab ", vab, ", mjdj" ,mj_dj
         ! endif
-        print *, "j  str rate inc ", j, str_rate_int(:,:)
-        end if
+        !print *, "j  rot rate inc ", j, rot_rate_int(1,2)
+        !end if
       end do
 
       do k = 1, jpair_t(i)   
@@ -275,20 +280,20 @@ contains
         ! GK = GradKernel (rij/h,h)
         
         !if (i==52 .and. j==675) then
-        if (i==52 ) then
-        print *," j ", j, "densij mj/rhoj",CalcDensIncNb(i,j), pt%m(j)/pt%rho(j)
+        !if (i==52 ) then
+        !print *," j ", j, "densij mj/rhoj",CalcDensIncNb(i,j), pt%m(j)/pt%rho(j)
         !print *,"xij vij K ", xij, ", ", vij, ", ", GK
         !print *, "vab ", pt%v(i,:) - pt%v(j,:)
-        end if
+        !end if
         pt%drhodt(i) =  pt%drhodt(i) + pt%m(j)/pt%rho(j) * CalcDensIncNb(i, j)
         !print *, "dTdt ", dTdt(i)
       end do
 
       do k = 1, jpair_t(i)   
         j = Anei_t(i,maxnbcount - k + 1)
-        if (i==52 ) then
-        print *," j ", j, "densij ",CalcDensIncNb(i,j)
-        end if
+        ! if (i==52 ) then
+        ! print *," j ", j, "densij ",CalcDensIncNb(i,j)
+        ! end if
         ! if (i==1) then
         ! print *," j ", j
         ! end if
@@ -330,14 +335,15 @@ contains
   !$omp parallel do num_threads(Nproc) private (RotationRateT, Stress, SRT, RS)
   do i = 1, part_count
     !pt%pressure(i) = EOS(PresEq, Cs, P0,Density, RefDensity)
-    if (i == 52) then
-    print *, "cs, p00, rho, rho_0 ", pt%cs(i), p00,pt%rho(i), pt%rho_0(i)
-    end if
+    ! if (i == 52) then
+    ! print *, "cs, p00, rho, rho_0 ", pt%cs(i), p00,pt%rho(i), pt%rho_0(i)
+    ! end if
     pt%pressure(i) = EOS(0, pt%cs(i), p00,pt%rho(i), pt%rho_0(i))
     if (i==52) then
     !print *, "pt%pressure(i)", pt%pressure(i),", cs ", pt%cs(i), "p00", p00, ", rho", p00,pt%rho(i), ", rho 0", p00,pt%rho_0(i)
     end if
     RotationRateT = transpose (pt%rot_rate(i,:,:))
+
     SRT = MatMul(pt%shear_stress(i,:,:),RotationRateT)
     RS  = MatMul(pt%rot_rate(i,:,:), pt%shear_stress(i,:,:))
     
@@ -352,8 +358,10 @@ contains
   !$omp end parallel do    
 	  !print *, "str_rate ", pt%str_rate(1,:,:)
 	  !print *, "shear_stress ", pt%shear_stress(1,:,:)
-    print *, "pressure ",pt%pressure(52)
-	  print *, "sigma ", pt%sigma(52,:,:)
+    ! print *, "matG" , mat_G
+    ! print *, "shear_stress ",pt%shear_stress(52,:,:)
+    ! print *, "pressure ",pt%pressure(52)
+	  ! print *, "sigma ", pt%sigma(52,:,:)
   !double dep = 0.;
   !double sig_trial = 0.;
 
@@ -368,5 +376,20 @@ contains
   !Strain	= dt*StrainRate + Strain;
 
   end subroutine CalcStressStrain
+  
+  subroutine CalcEquivalentStress
+    use Domain
+    real(fp_kind) :: J2
+  	integer :: i
+    
+    do i=1,part_count
+
+      J2	= 0.5*(pt%shear_stress(i,0,0)*pt%shear_stress(i,0,0) + 2.0*pt%shear_stress(i,0,1)*pt%shear_stress(i,1,0) + &
+            2.0*pt%shear_stress(i,0,2)*pt%shear_stress(i,2,0) + pt%shear_stress(i,1,1)*pt%shear_stress(i,1,1) + &
+            2.0*pt%shear_stress(i,1,2)*pt%shear_stress(i,2,1) + pt%shear_stress(i,2,2)*pt%shear_stress(i,2,2));
+    
+      pt%sigma_eq(i) = sqrt(3.0*J2)
+    end do
+  end subroutine CalcEquivalentStress
 
 end module Mechanical

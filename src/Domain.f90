@@ -53,6 +53,8 @@ contains
     allocate (pt%pressure(part_count))
     allocate (pt%cs(part_count))
     
+    allocate (pt%sigma_eq(part_count))
+    
     allocate (pt%rho_0(part_count))
     
     !end if  

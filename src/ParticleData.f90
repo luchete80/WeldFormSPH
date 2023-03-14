@@ -27,6 +27,8 @@ Type Particle
   real(fp_kind), dimension(:,:,:), allocatable :: sigma, str_rate, rot_rate, shear_stress
   real(fp_kind), dimension(:), allocatable:: pressure, strain, mat_g
   
+  real(fp_kind), dimension(:), allocatable :: sigma_eq !ONLY CALCULATED AT OUTPUT
+  
   Integer solver_type
  
   
