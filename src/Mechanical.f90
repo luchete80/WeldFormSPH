@@ -185,7 +185,7 @@ contains
     real(fp_kind) :: GK, xij(3), vab(3),h, rij
     !dTdt (:) = 0.
     
-   !$omp parallel do num_threads(Nproc) private (i,j,k) 
+   !$omp parallel do num_threads(Nproc) private (i,j,k,str_rate_int,rot_rate_int,mj_dj) 
     do i = 1, part_count
       pt%str_rate(i,:,:) = 0.0
       pt%rot_rate(i,:,:) = 0.0
