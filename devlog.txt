@@ -29,4 +29,5 @@
          - Corrected critical error in BC application in solver before density calculation
 20230313 - Fixed critical error in density calculation (there was missing multipying by current density)
          - Found error in G module (was never initialized)
-         - Added Equivalent Stress Calc
+         - Added Equivalent Stress Calccls
+         - Found error in velocity calc

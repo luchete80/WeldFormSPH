@@ -35,6 +35,8 @@ subroutine SolveDiffUpdateFraser (tf, dt)
  
   
   time = 0.
+  pt%disp(i,:)  = 0.
+  
   do while (time < tf)
     call StartVars !Similar to start acceleration in weldform
     !APPLY BC!
@@ -50,6 +52,7 @@ subroutine SolveDiffUpdateFraser (tf, dt)
       end if
     end do 
     
+    print *, " vel 52 ", pt%v(52,:)
     call CalcDensIncPart
     print *, "dt " , dt
     !!$omp parallel do num_threads(Nproc) private (du)
@@ -72,6 +75,8 @@ subroutine SolveDiffUpdateFraser (tf, dt)
     !print *, "Sigma 103 " , pt%sigma(1298,:,:)
     
     call CalcAccelPart
+
+        
     !print *, "Accel 52" , pt%a(52,:)
     ! !REINFORCE bc vel
     do i=1,part_count
@@ -79,20 +84,26 @@ subroutine SolveDiffUpdateFraser (tf, dt)
         pt%a(i,:) = 0.
        end if
     end do
-    
-    !$omp parallel do num_threads(Nproc) private (du)
-    do i = 1, part_count
-    !print *, "acc ",  pt%a(i,1), ", ",  pt%a(i,2), ", ", pt%a(i,3)
-    !    print *, "StrainRate ",  pt%str_rate(i,:,:)
-    du = pt%v(i,:) * dt * + 0.5 * pt%a(i,:) * dt * dt 
-    pt%x(i,:)     = pt%x(i,:)   + du
-    pt%disp(i,:)  = pt%disp(i,:) + du
-    end do
-    !$omp end parallel do  
 
+    
+        
+    !!$omp parallel do num_threads(Nproc) private (du)
+    do i = 1, part_count
+      du = pt%v(i,:) * dt + 0.5 * pt%a(i,:) * dt * dt 
+      pt%x(i,:)     = pt%x(i,:)   + du
+      pt%disp(i,:)  = pt%disp(i,:) + du
+    if (i==51) then
+    print *, " du 52 ", du
+    print *, " a v id ", pt%a(i,:), " " , pt%v(i,:), " ", pt%id(52)
+    end if
+    end do
+    !!$omp end parallel do  
+    
+      print *, "disp 52", pt%disp(52,:) 
+      
     !$omp parallel do num_threads(Nproc)  
     do i = 1, part_count
-      pt%v(i,:) = pt%a(i,:) * dt 
+      pt%v(i,:) = pt%v(i,:) + pt%a(i,:) * dt 
     end do
     !$omp end parallel do  
 
@@ -112,7 +123,7 @@ subroutine SolveDiffUpdateFraser (tf, dt)
       print *, "dens ",  pt%rho(1)
     
     time = time + dt
-  end do 
+  end do  !time < tf MAIN TIME LOOP
   
   dumax = 0.0
   do i=1,part_count  
