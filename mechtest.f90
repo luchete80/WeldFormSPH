@@ -20,7 +20,11 @@ implicit none
   !! MATERIAL
   real(fp_kind)::rho
   integer :: i
-  
+
+   ! Variables for clock
+   integer count_0, count_1
+   integer count_rate, count_max
+   double precision time_init, time_final, elapsed_time  
   
   
   nproc = 12
@@ -65,9 +69,24 @@ implicit none
   print *, "h ", h, "Cs ", pt%cs(1), "Time step: ", dt
   
   !t = 1.0e-4
-  t = 2000.*dt
+  t = 1000.*dt
+
+   ! Starting time
+   call system_clock(count_0, count_rate, count_max)
+   time_init = count_0*1.0/count_rate
+   
   call SolveDiffUpdateFraser(t,dt)
-  
+
+  ! Ending time
+  call system_clock(count_1, count_rate, count_max)
+  time_final = count_1*1.0/count_rate
+  ! Elapsed time
+  elapsed_time = time_final - time_init
+
+  ! Write elapsed time
+  write(*,1003) int(elapsed_time),elapsed_time-int(elapsed_time)
+  !write(*,*) "Elapsed time: ", int(elapsed_time),elapsed_time-int(elapsed_time)
+    
   call CalcEquivalentStress()
     
   open (1,file='test.csv')!, position='APPEND')  
@@ -85,4 +104,6 @@ implicit none
   
   print *, "Program End."
 
+  1003 format('  Elapsed Time  = ',i0,f0.9)
+  
 end program MechTest
