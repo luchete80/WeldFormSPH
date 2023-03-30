@@ -65,7 +65,7 @@ implicit none
   print *, "h ", h, "Cs ", pt%cs(1), "Time step: ", dt
   
   !t = 1.0e-4
-  t = 2.*dt
+  t = 1000.*dt
   call SolveDiffUpdateFraser(t,dt)
   
   call CalcEquivalentStress()
