@@ -68,7 +68,7 @@ implicit none
   dt = 0.4 * h / pt%cs(1)
   print *, "h ", h, "Cs ", pt%cs(1), "Time step: ", dt
   
-  t = 1.90e-4
+  t = 1.94e-7 
   !t = 1000.*dt
 
 
@@ -97,7 +97,9 @@ implicit none
               &str_rate_xx, str_rate_xy, str_rate_xz, &
               &str_rate_yx, str_rate_yy, str_rate_yz, &
               &str_rate_zx, str_rate_zy, str_rate_zz, &
-              &shestressxx, shestressxy, shestressxz, sig_eq"
+              &shestressxx, shestressyy, shestresszz, & 
+              &shestressxy, shestressxz, shestressyz,&
+              & sig_eq"
   
   do i=1,part_count  
     write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%id(i), ", ", pt%rho(i), ", ", &
@@ -108,7 +110,8 @@ implicit none
                 &pt%str_rate(i,1,1), ", ",pt%str_rate(i,1,2), ", ",pt%str_rate(i,1,3), ", ",&
                 &pt%str_rate(i,2,1), ", ",pt%str_rate(i,2,2), ", ",pt%str_rate(i,2,3), ", ",&
                 &pt%str_rate(i,3,1), ", ",pt%str_rate(i,3,2), ", ",pt%str_rate(i,3,3), ", ",&
-                &pt%shear_stress(i,1,1), ", ",pt%shear_stress(i,1,2), ", ",pt%shear_stress(i,1,3), ", ",&
+                &pt%shear_stress(i,1,1), ", ",pt%shear_stress(i,2,2), ", ",pt%shear_stress(i,3,3), ", ",&
+                &pt%shear_stress(i,1,1), ", ",pt%shear_stress(i,1,3), ", ",pt%shear_stress(i,2,3), ", ",&
                 &pt%sigma_eq(i)
   end do
   close(1)

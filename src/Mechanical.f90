@@ -356,12 +356,12 @@ contains
     !pt%strain(i)			= dt*pt%str_rate(i + Strain;
   end do
   !$omp end parallel do    
-	  !print *, "str_rate ", pt%str_rate(1,:,:)
-	  !print *, "shear_stress ", pt%shear_stress(1,:,:)
+	  print *, "str_rate ", pt%str_rate(52,:,:)
+	  print *, "shear_stress ", pt%shear_stress(52,:,:)
     ! print *, "matG" , mat_G
     ! print *, "shear_stress ",pt%shear_stress(52,:,:)
     ! print *, "pressure ",pt%pressure(52)
-	  ! print *, "sigma ", pt%sigma(52,:,:)
+	  print *, "sigma ", pt%sigma(52,:,:)
   !double dep = 0.;
   !double sig_trial = 0.;
 
