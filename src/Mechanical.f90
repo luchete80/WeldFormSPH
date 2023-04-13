@@ -329,8 +329,8 @@ contains
   
   p00 = 0.
   
-  ident = 0.
-  ident (1,1) = 1.0; ident (2,2) = 1.0; ident (3,3) = 1.0
+  ident = 0.0d0
+  ident (1,1) = 1.0d0; ident (2,2) = 1.0d0; ident (3,3) = 1.0d0
   
   !$omp parallel do num_threads(Nproc) private (RotationRateT, Stress, SRT, RS)
   do i = 1, part_count

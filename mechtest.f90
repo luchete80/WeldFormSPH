@@ -93,7 +93,11 @@ implicit none
     
   open (1,file='test.csv')!, position='APPEND')  
   write (1,*) "X, Y, Z, id, rho, Nb, Vx, Vy, Vz, Ax, Ay, Az,&
-              &Ux, Uy, Uz, str_rate_xx, str_rate_xy, str_rate_xz, shestressxx, shestressxy, shestressxz, sig_eq"
+              &Ux, Uy, Uz, str_rate_xx, str_rate_xy, str_rate_xz, &
+              &str_rate_xx, str_rate_xy, str_rate_xz, &
+              &str_rate_yx, str_rate_yy, str_rate_yz, &
+              &str_rate_zx, str_rate_zy, str_rate_zz, &
+              &shestressxx, shestressxy, shestressxz, sig_eq"
   
   do i=1,part_count  
     write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%id(i), ", ", pt%rho(i), ", ", &
@@ -101,7 +105,9 @@ implicit none
                 &pt%v(i,1), ", ", pt%v(i,2), ", ", pt%v(i,3), ", ",&
                 &pt%a(i,1), ", ", pt%a(i,2), ", ", pt%a(i,3), ", ", &
                 &pt%disp(i,1), ", ", pt%disp(i,2), ", ", pt%disp(i,3), ", ",&
-                &pt%str_rate(i,1,1), ", ",pt%str_rate(i,1,2), ", ",pt%shear_stress(i,1,3), ", ",&
+                &pt%str_rate(i,1,1), ", ",pt%str_rate(i,1,2), ", ",pt%str_rate(i,1,3), ", ",&
+                &pt%str_rate(i,2,1), ", ",pt%str_rate(i,2,2), ", ",pt%str_rate(i,2,3), ", ",&
+                &pt%str_rate(i,3,1), ", ",pt%str_rate(i,3,2), ", ",pt%str_rate(i,3,3), ", ",&
                 &pt%shear_stress(i,1,1), ", ",pt%shear_stress(i,1,2), ", ",pt%shear_stress(i,1,3), ", ",&
                 &pt%sigma_eq(i)
   end do
