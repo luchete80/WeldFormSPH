@@ -68,8 +68,8 @@ implicit none
   dt = 0.4 * h / pt%cs(1)
   print *, "h ", h, "Cs ", pt%cs(1), "Time step: ", dt
   
-  !t = 1.0e-4
-  t = 1000.*dt
+  t = 1.90e-4
+  !t = 1000.*dt
 
 
    ! Starting time
@@ -90,15 +90,19 @@ implicit none
     
   call CalcEquivalentStress()
     
+    
   open (1,file='test.csv')!, position='APPEND')  
-  write (1,*) "X, Y, Z, id, rho, Nb, Vx, Vy, Vz, Ax, Ay, Az, &
-              &Ux, Uy, Uz, sig_eq"
+  write (1,*) "X, Y, Z, id, rho, Nb, Vx, Vy, Vz, Ax, Ay, Az,&
+              &Ux, Uy, Uz, str_rate_xx, str_rate_xy, str_rate_xz, shestressxx, shestressxy, shestressxz, sig_eq"
   
   do i=1,part_count  
-    write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%id(i), ", ", pt%rho(i), ", ", ipair_t(i)+jpair_t(i), ", " ,&
+    write (1,*) pt%x(i,1), ", ", pt%x(i,2), ", " ,pt%x(i,3), ", " ,pt%id(i), ", ", pt%rho(i), ", ", &
+                &ipair_t(i)+jpair_t(i), ", " ,&
                 &pt%v(i,1), ", ", pt%v(i,2), ", ", pt%v(i,3), ", ",&
-                &pt%a(i,1), ", ", pt%a(i,2), ", ", pt%a(i,3), ", ",&
+                &pt%a(i,1), ", ", pt%a(i,2), ", ", pt%a(i,3), ", ", &
                 &pt%disp(i,1), ", ", pt%disp(i,2), ", ", pt%disp(i,3), ", ",&
+                &pt%str_rate(i,1,1), ", ",pt%str_rate(i,1,2), ", ",pt%shear_stress(i,1,3), ", ",&
+                &pt%shear_stress(i,1,1), ", ",pt%shear_stress(i,1,2), ", ",pt%shear_stress(i,1,3), ", ",&
                 &pt%sigma_eq(i)
   end do
   close(1)
