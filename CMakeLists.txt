@@ -24,7 +24,7 @@ endif()
 if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
     set(CMAKE_Fortran_FLAGS         "${CMAKE_Fortran_FLAGS} -Wall")
     set(CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g3")
-    set(CMAKE_Fortran_FLAGS_RELEASE "-Ofast -march=native")
+    set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -march=native")
 endif()
 
 file(GLOB_RECURSE sources  src/*.f90 src/*.h)

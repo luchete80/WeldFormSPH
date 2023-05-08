@@ -76,7 +76,7 @@ subroutine SolveDiffUpdateFraser (tf, dt)
     call CalcAccelPart
 
         
-    print *, "Accel 52" , pt%a(52,:)
+   !print *, "Accel 52" , pt%a(52,:)
     ! !REINFORCE bc vel
     do i=1,part_count
        if (pt%id(i) == 2 .or. pt%id(i) == 3) then

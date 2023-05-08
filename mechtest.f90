@@ -68,8 +68,8 @@ implicit none
   dt = 0.4 * h / pt%cs(1)
   print *, "h ", h, "Cs ", pt%cs(1), "Time step: ", dt
   
-  t = 1.94e-7 
-  !t = 1000.*dt
+  !t = 1.94e-7 
+  t = 1000.*dt
 
 
    ! Starting time
