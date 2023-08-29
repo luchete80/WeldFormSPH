@@ -3,7 +3,7 @@ use ModPrecision, only : fp_kind
 
 contains 
 
-subroutine SolveDiffUpdateFraser (tf, dt)
+subroutine SolveDiffUpdateFraser (tf, dt, dtout)
   
   use omp_lib
   use Domain
@@ -12,13 +12,15 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   use Kernels
   implicit none
  
-  real(fp_kind),intent(in)::tf, dt
+  real(fp_kind),intent(in)::tf, dt, dtout
  
   real(fp_kind),dimension(3)::du
   
   real(fp_kind),dimension(3)::dumax
   
-  integer :: i, j
+  real(fp_kind) :: tout 
+  
+  integer :: i, j, step
 
   call omp_set_num_threads(12); 
   call DomInit(12)
@@ -37,6 +39,8 @@ subroutine SolveDiffUpdateFraser (tf, dt)
   time = 0.
   pt%disp(i,:)  = 0.
   
+  step = 1
+  tout = 0.0d0
   do while (time < tf)
     call StartVars !Similar to start acceleration in weldform
     !APPLY BC!
@@ -114,8 +118,15 @@ subroutine SolveDiffUpdateFraser (tf, dt)
       end if
     end do    
 
+    if (time > tout) then
+    print *, "Steps ", step, "Time "
+    
+    tout = tout + dtout
+    end if
     
     time = time + dt
+    step  = step +1
+    
   end do  !time < tf MAIN TIME LOOP
   
   dumax = 0.0

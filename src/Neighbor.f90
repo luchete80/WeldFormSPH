@@ -93,10 +93,10 @@ contains
 	!!Because of Hexagonal close packing in x direction domain is modified
 	!if (!BC.Periodic(0)) {TRPR(0) += hmax/2;	BLPF(0) -= hmax/2;}else{TRPR(0) += R; BLPF(0) -= R;}
     trpr(:) = trpr(:) + hmax/2.0; blpf(:) = blpf(:) - hmax/2.0
-    write (*,*) "trpr ", trpr(:)
-    write (*,*) "blpf ", blpf(:)
+    !write (*,*) "trpr ", trpr(:)
+    !write (*,*) "blpf ", blpf(:)
     
-    write (*,*) "Done, allocating cellno "
+    !write (*,*) "Done, allocating cellno "
     !Calculate Cell properties
     do i = 1, Dim
       if (real(ceiling(((trpr(i)-blpf(i))/(cellfac*hmax)))-((trpr(i)-blpf(i))/(cellfac*hmax))) < hmax/10.) then
@@ -106,11 +106,11 @@ contains
       end if
     end do
     
-    print *, "test ", real(CellNo(:))
+    !print *, "test ", real(CellNo(:))
     cellsize(:) = (trpr(:)-BLPF(:))/real(CellNo(:))
 
-    write (*, *) "Cell No ", cellno(:)
-    write (*, *) "Cell Size ", cellsize(:)
+    !write (*, *) "Cell No ", cellno(:)
+    !write (*, *) "Cell Size ", cellsize(:)
     !Periodic BC correction
 
     !Initiate Head of Chain array for Linked-List
@@ -146,7 +146,7 @@ contains
       ll(a) = temp
       cc(a,:) = ijk(:) + 1
     end do 
-  print *, "List generation done, HOC ", HOC(:,:,:) 
+  !print *, "List generation done, HOC ", HOC(:,:,:) 
 
   end subroutine ListGenerate
 
@@ -167,7 +167,7 @@ contains
     integer, intent(in)  :: q1
     integer :: q2, q3, temp1, temp2, t, i, j
     t = omp_get_thread_num() + 1
-    print *,"******- thread ", t
+    !print *,"******- thread ", t
     do q3 = 1, CellNo(3)
       do q2 = 1, CellNo(2)
         if (HOC(q1,q2,q3)== -1) then
@@ -263,11 +263,11 @@ contains
     call YZPlaneCellsNeighbourSearch(q1)
   end do
   !$omp end parallel do
-  print *, "Nb Search done."
-  print *, "Pair count ", pair_count
+  !print *, "Nb Search done."
+  !print *, "Pair count ", pair_count
   if (nballoc_pass) then
     do q1 = 1, nproc
-    print *, pairs_t(q1,pair_count(q1),1)
+    !print *, pairs_t(q1,pair_count(q1),1)
     end do 
   end if
   end subroutine MainNeighbourSearch
@@ -326,7 +326,7 @@ contains
         ipair_t(i) = ipair_t(i) + 1             !!ngji in 
         jpair_t(j) = jpair_t(j) + 1             !!njli, pairs in which j has particles with index smaller than it        
       end do ! pairs
-      print *, "***************"
+      !print *, "***************"
     end do !procs
     
   end subroutine CalcPairPosList

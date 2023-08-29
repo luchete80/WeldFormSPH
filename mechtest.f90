@@ -16,7 +16,7 @@ implicit none
   real(fp_kind), dimension(1:3) :: V
   real(fp_kind):: r, Lx, Ly, Lz, Rxy, dx, h, e, nu, k_i, g_i
   
-  real(fp_kind):: dt, t
+  real(fp_kind):: dt, t, dtout
   !! MATERIAL
   real(fp_kind)::rho
   integer :: i
@@ -70,13 +70,17 @@ implicit none
   
   !t = 1.94e-7 
   t = 1000.*dt
+  
+  print *, "End time: ", t
+  
+  dtout = t/10.0
 
 
    ! Starting time
    call system_clock(count_0, count_rate, count_max)
    time_init = count_0*1.0/count_rate
 
-  call SolveDiffUpdateFraser(t,dt)
+  call SolveDiffUpdateFraser(t,dt,dtout)
 
   ! Ending time
   call system_clock(count_1, count_rate, count_max)
